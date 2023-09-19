@@ -1,8 +1,18 @@
+#include <application.hpp>
 #include <iostream>
 
 
 int main()
 {
-    std::clog << "Hello World!" << std::endl;
-    return 0;
+    Application& application = Application::instance();
+
+    if (!application.init())
+    {
+        std::clog << "Failed to create window!" << std::endl;
+        return -1;
+    }
+
+    int result = application.start();
+    application.terminate();
+    return result;
 }

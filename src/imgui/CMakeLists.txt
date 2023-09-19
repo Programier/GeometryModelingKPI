@@ -1,0 +1,7 @@
+set(IMGUI_SOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+file(GLOB IMGUI_SRC "${IMGUI_SOURCES_DIR}/*.cpp")
+
+add_library(imgui STATIC ${IMGUI_SRC})
+target_include_directories(imgui PRIVATE "${GEOMETRYMODELINGKPI_PROJECT_INCLUDE_DIR}/imgui/")
+
+
