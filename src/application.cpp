@@ -27,7 +27,6 @@ bool Application::init()
 
 void Application::terminate()
 {
-    Window::instance()->terminate();
     delete Window::instance();
 }
 

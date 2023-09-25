@@ -1,15 +1,14 @@
 #pragma once
 
-
 struct SDL_Window;
-struct SDL_Renderer;
 
 class Window
 {
 private:
     SDL_Window* _M_window;
-    SDL_Renderer* _M_renderer;
+    void* _M_context;
     static Window* _M_instance;
+
 
     bool _M_is_first_frame;
 
@@ -22,7 +21,6 @@ private:
 
 public:
     SDL_Window* window() const;
-    SDL_Renderer* renderer() const;
 
     static Window* instance();
     void render();

@@ -1,3 +1,4 @@
+#include <definitions.hpp>
 #include <renderer.hpp>
 
 static void draw_circle(glm::ivec2 center, int radius, int segments = 360)
@@ -13,5 +14,5 @@ static void draw_circle(glm::ivec2 center, int radius, int segments = 360)
 
 void render_scene()
 {
-    draw_circle({400, 300}, 150, 360);
+    draw_circle({VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2}, VIEWPORT_HEIGHT / 2);
 }

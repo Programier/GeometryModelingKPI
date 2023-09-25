@@ -1,17 +1,16 @@
+
+#include <opengl.hpp>
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <application.hpp>
 #include <definitions.hpp>
+#include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl2.h>
-#include <imgui/imgui_impl_sdlrenderer2.h>
 #include <iostream>
 #include <object.hpp>
 #include <renderer.hpp>
 #include <window.hpp>
-
-
-SDL_Rect full_viewport;
-SDL_Rect scene_viewport;
 
 
 Window* Window::_M_instance = nullptr;
@@ -36,50 +35,21 @@ SDL_Window* Window::window() const
     return _M_window;
 }
 
-SDL_Renderer* Window::renderer() const
-{
-    return _M_renderer;
-}
-
-void Window::render_ui()
-{
-    ImGui_ImplSDLRenderer2_NewFrame();
-    ImGui_ImplSDL2_NewFrame(_M_window);
-    ImGui::NewFrame();
-
-    ImGui::Begin("Properties", nullptr,
-                 ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse);
-    if (_M_is_first_frame)
-    {
-        ImGui::SetWindowPos({0, 0});
-        ImGui::SetWindowSize({PROPERTIES_WIDTH, WINDOW_HEIGHT});
-    }
-
-    ImGui::End();
-
-    ImGui::Render();
-}
 
 void Window::render_scene()
 {
+    glViewport(PROPERTIES_WIDTH, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
     extern void render_scene();
     render_scene();
 }
 
 void Window::render()
 {
-    SDL_SetRenderDrawColor(_M_renderer, 0, 0, 0, 255);
-    SDL_RenderClear(_M_renderer);
-
-    SDL_RenderSetViewport(_M_renderer, &full_viewport);
+    glClear(GL_COLOR_BUFFER_BIT);
     render_ui();
-    SDL_RenderSetViewport(_M_renderer, &scene_viewport);
     render_scene();
 
-
-    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
-    SDL_RenderPresent(_M_renderer);
-
+    SDL_GL_SwapWindow(_M_window);
     _M_is_first_frame = false;
 }
 
@@ -128,7 +98,7 @@ bool Window::initialize()
 
 
     _M_window = SDL_CreateWindow("Geometry modeling", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH,
-                                 WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
+                                 WINDOW_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 
 
     if (!_M_window)
@@ -137,56 +107,38 @@ bool Window::initialize()
         return false;
     }
 
-    _M_renderer = SDL_CreateRenderer(_M_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!_M_renderer)
-    {
-        std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
-        return false;
-    }
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+
+
+    _M_context = SDL_GL_CreateContext(_M_window);
+    SDL_GL_MakeCurrent(_M_window, _M_context);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
 
     ImGui::CreateContext();
-    ImGui_ImplSDL2_InitForSDLRenderer(_M_window, _M_renderer);
-    ImGui_ImplSDLRenderer2_Init(_M_renderer);
 
-    _M_is_first_frame = true;
+    ImGui_ImplSDL2_InitForOpenGL(_M_window, _M_context);
+    ImGui_ImplOpenGL3_Init("#version 300 es");
 
     Renderer::init();
 
-    full_viewport.x = 0;
-    full_viewport.y = 0;
-    full_viewport.w = WINDOW_WIDTH;
-    full_viewport.h = WINDOW_HEIGHT;
-
-    scene_viewport.x = PROPERTIES_WIDTH;
-    scene_viewport.y = 0;
-    scene_viewport.w = VIEWPORT_WIDTH;
-    scene_viewport.h = WINDOW_HEIGHT;
-
-    SDL_SetRenderDrawBlendMode(_M_renderer, SDL_BLENDMODE_BLEND);
+    _M_is_first_frame = true;
 
     return true;
 }
 
 void Window::terminate()
 {
-    if (_M_window && _M_renderer)
-    {
-        ImGui_ImplSDLRenderer2_Shutdown();
-        ImGui_ImplSDL2_Shutdown();
-        ImGui::DestroyContext();
-    }
+    Renderer::terminate();
 
-    if (_M_renderer != nullptr)
-    {
-        SDL_DestroyRenderer(_M_renderer);
-        _M_renderer = nullptr;
-    }
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
 
-    if (_M_window != nullptr)
-    {
-        SDL_DestroyWindow(_M_window);
-        _M_window = nullptr;
-    }
+
+    SDL_DestroyWindow(_M_window);
+    _M_window = nullptr;
 
 
     SDL_Quit();
