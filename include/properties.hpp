@@ -67,6 +67,9 @@ struct Properties {
             float angle;
         } rotate;
 
+
+        bool render;
+
     } figure;
 
 
@@ -80,7 +83,9 @@ struct Properties {
         glm::vec2 R0;
         glm::vec2 Rx;
         glm::vec2 Ry;
-        glm::vec2 W0;
+        glm::vec2 W;
+        float W0;
+        bool enable;
     } projective;
 
     Properties();

@@ -67,13 +67,14 @@ void draw_grid_with_axes()
 
 
         // Малюємо координатні вісі
-        glm::vec2 x_axis_start = PointTransformer::transform(to_grid_space(0, origin.y));
+        glm::vec2 x_axis_start = to_grid_space(0, origin.y);
+        x_axis_start           = PointTransformer::transform(x_axis_start);
         glm::vec2 x_axis_end   = PointTransformer::transform(to_grid_space(width, origin.y));
         draw_line(x_axis_start, x_axis_end, glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), false);// Червона вісь X
 
-        glm::vec2 y_axis_start = PointTransformer::transform(to_grid_space(origin.x, 0));
-        glm::vec2 y_axis_end   = PointTransformer::transform(to_grid_space(origin.x, height));
-        draw_line(y_axis_start, y_axis_end, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), false);// Зелена вісь Y
+        //        glm::vec2 y_axis_start = PointTransformer::transform(to_grid_space(origin.x, 0));
+        //        glm::vec2 y_axis_end   = PointTransformer::transform(to_grid_space(origin.x, height));
+        //        draw_line(y_axis_start, y_axis_end, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), false);// Зелена вісь Y
     }
 
     Renderer::line_width(cache_line_width);
@@ -83,5 +84,7 @@ void draw_grid_with_axes()
 void render_scene()
 {
     draw_grid_with_axes();
-    Figure::instance().render(draw_line);
+
+    if (properties.figure.render)
+        Figure::instance().render(draw_line);
 }

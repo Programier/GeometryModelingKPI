@@ -20,9 +20,23 @@ namespace PointTransformer
         return glm::vec2(x, y);
     }
 
+    static glm::vec2 projective(glm::vec2 point)
+    {
+        auto& proj        = properties.projective;
+        float denominator = proj.W0 + proj.W.x * point.x + proj.W.y * point.y;
+        float x = (proj.R0.x * proj.W0 + proj.Rx.x * proj.W.x * point.x + proj.Ry.x * proj.W.y * point.y) / denominator;
+        float y = (proj.R0.y * proj.W0 + proj.Rx.y * proj.W.x * point.x + proj.Ry.y * proj.W.y * point.y) / denominator;
+        return glm::vec2(x, y);
+    }
+
     glm::vec2 transform(glm::vec2 point)
     {
-        return affine(point);
+        point = affine(point);
+        if (properties.projective.enable)
+        {
+            point = projective(point);
+        }
+        return point;
     }
 
 

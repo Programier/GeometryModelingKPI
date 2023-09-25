@@ -14,7 +14,7 @@
 #include <window.hpp>
 
 
-const char imgui_style[] = {
+static inline constexpr const char imgui_style[] = {
         0,    0,    -128, 63, -102, -103, 25,   63, 0,    0,    0,    65, 0,    0,    0,    65, 0,    0,    0,    0,
         0,    0,    -128, 63, 0,    0,    0,    66, 0,    0,    0,    66, 0,    0,    0,    0,  0,    0,    0,    63,
         0,    0,    0,    0,  0,    0,    0,    0,  0,    0,    -128, 63, 0,    0,    0,    0,  0,    0,    -128, 63,
@@ -129,15 +129,15 @@ void Window::wait_events() const
 {
     SDL_Event event;
     static int skip_frames = 2;
-    if (skip_frames > 0)
-    {
-        --skip_frames;
-    }
-    else
-    {
-        SDL_WaitEvent(&event);
-        process_event(&event);
-    }
+    //    if (skip_frames > 0)
+    //    {
+    //        --skip_frames;
+    //    }
+    //    else
+    //    {
+    //        SDL_WaitEvent(&event);
+    //        process_event(&event);
+    //    }
 
 
     while (SDL_PollEvent(&event))

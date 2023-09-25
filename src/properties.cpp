@@ -192,6 +192,15 @@ Properties::Properties()
 
     affine.Rx = glm::vec2(1.0, 0.0);
     affine.Ry = glm::vec2(0.0, 1.0);
+
+    figure.render = true;
+
+    projective.R0     = {0, 0};
+    projective.Rx     = {100, 0};
+    projective.Ry     = {0, 200.f};
+    projective.W      = {10.f, 10.f};
+    projective.W0     = 1000.f;
+    projective.enable = false;
 }
 
 float Properties::figure_prop(std::size_t index) const

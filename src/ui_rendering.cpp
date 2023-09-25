@@ -88,6 +88,8 @@ static void figure_properties()
             ImGui::InputFloat2("Rotate Point", &properties.figure.rotate.point.x);
             ImGui::InputFloat("Rotate Angle", &properties.figure.rotate.angle);
         }
+
+        ImGui::Checkbox("Render Figure", &properties.figure.render);
     }
 }
 
@@ -115,7 +117,9 @@ static void projective_properties()
         ImGui::InputFloat2("R0", &properties.projective.R0.x);
         ImGui::InputFloat2("Rx", &properties.projective.Rx.x);
         ImGui::InputFloat2("Ry", &properties.projective.Ry.x);
-        ImGui::InputFloat2("W0", &properties.projective.W0.x);
+        ImGui::InputFloat2("W", &properties.projective.W.x);
+        ImGui::InputFloat("W0", &properties.projective.W0);
+        ImGui::Checkbox("Enable Projective", &properties.projective.enable);
     }
 }
 
