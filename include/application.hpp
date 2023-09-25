@@ -9,8 +9,6 @@ private:
     Window* _M_window;
     bool _M_is_requested_exit;
 
-    void update();
-
     Application();
 
 public:

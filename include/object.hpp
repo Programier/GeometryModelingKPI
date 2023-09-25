@@ -14,10 +14,8 @@ public:
     Object();
 
     static const std::set<Object*>& objects();
-
-    virtual void update();
-    virtual void render();
     virtual void process_event(SDL_Event* event);
+    static void objects_process_event(SDL_Event* event);
 
     virtual ~Object();
 };

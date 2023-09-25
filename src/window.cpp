@@ -1,4 +1,3 @@
-
 #include <opengl.hpp>
 
 #include <SDL2/SDL.h>
@@ -62,6 +61,8 @@ static void process_event(SDL_Event* event)
         Application::instance().request_exit();
     }
 
+
+    Object::objects_process_event(event);
     ImGui_ImplSDL2_ProcessEvent(event);
 }
 

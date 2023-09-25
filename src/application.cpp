@@ -1,10 +1,7 @@
 #include <application.hpp>
-#include <object.hpp>
 #include <properties.hpp>
 #include <window.hpp>
 
-
-Properties properties;
 
 Application::Application()
 {}
@@ -41,20 +38,11 @@ bool Application::is_requested_exit() const
 }
 
 
-void Application::update()
-{
-    for (auto& object : Object::objects())
-    {
-        object->update();
-    }
-}
-
 int Application::start()
 {
     while (!is_requested_exit())
     {
         _M_window->wait_events();
-        update();
         _M_window->render();
     }
 

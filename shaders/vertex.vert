@@ -1,12 +1,12 @@
 #version 310 es
 precision highp float;
 
-layout(location = 0) out vec4 out_color;
+layout(location = 0) out vec3 out_color;
 
 uniform vec2 point1;
 uniform vec2 point2;
-uniform vec4 color1;
-uniform vec4 color2;
+uniform vec3 color1;
+uniform vec3 color2;
 
 
 vec2 get_point()
@@ -21,7 +21,7 @@ vec2 get_point()
     }
 }
 
-vec4 get_color()
+vec3 get_color()
 {
     if (gl_VertexID == 0)
     {

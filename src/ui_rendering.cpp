@@ -16,19 +16,46 @@ static void rendering_properties()
         }
 
         ImGui::Checkbox("Use properties colors", &properties.rendering.use_props_colors);
-        ImGui::SliderFloat4("Point1 color", &properties.rendering.point1_color.x, 0.0, 1.0);
-        ImGui::SliderFloat4("Point2 color", &properties.rendering.point2_color.x, 0.0, 1.0);
+        ImGui::SliderFloat3("Point1 color", &properties.rendering.point1_color.x, 0.0, 1.0);
+        ImGui::SliderFloat3("Point2 color", &properties.rendering.point2_color.x, 0.0, 1.0);
 
         if (ImGui::CollapsingHeader("Background"))
         {
-            ImGui::SliderFloat4("ld color", &properties.rendering.ld_color.x, 0.0, 1.0);
-            ImGui::SliderFloat4("lu color", &properties.rendering.lu_color.x, 0.0, 1.0);
-            ImGui::SliderFloat4("rd color", &properties.rendering.rd_color.x, 0.0, 1.0);
-            ImGui::SliderFloat4("ru color", &properties.rendering.ru_color.x, 0.0, 1.0);
+            ImGui::SliderFloat3("ld color", &properties.rendering.ld_color.x, 0.0, 1.0);
+            ImGui::SliderFloat3("lu color", &properties.rendering.lu_color.x, 0.0, 1.0);
+            ImGui::SliderFloat3("rd color", &properties.rendering.rd_color.x, 0.0, 1.0);
+            ImGui::SliderFloat3("ru color", &properties.rendering.ru_color.x, 0.0, 1.0);
         }
     }
 }
 
+static void grid_properties()
+{
+    if (ImGui::CollapsingHeader("Grid"))
+    {
+        ImGui::SliderInt2("Start Pos", &properties.grid.start_point.x, -10000, 10000);
+        ImGui::SliderInt("Spacing", &properties.grid.spacing, 1, 1000);
+        if (ImGui::CollapsingHeader("Vertical Lines"))
+        {
+            ImGui::SliderFloat3("Vertical Color1", &properties.grid.v_color1.x, 0.0, 1.0);
+            ImGui::SliderFloat3("Vertical Color2", &properties.grid.v_color2.x, 0.0, 1.0);
+        }
+
+        if (ImGui::CollapsingHeader("Horizontal Lines"))
+        {
+            ImGui::SliderFloat3("Horizontal Color1", &properties.grid.h_color1.x, 0.0, 1.0);
+            ImGui::SliderFloat3("Horizontal Color2", &properties.grid.h_color2.x, 0.0, 1.0);
+        }
+
+        ImGui::Checkbox("Disable Grid", &properties.grid.disable_grid);
+        ImGui::Checkbox("Disable Axis", &properties.grid.disable_axis);
+    }
+}
+
+static void reset_properties()
+{
+    new (&properties) Properties();
+}
 
 void Window::render_ui()
 {
@@ -47,6 +74,12 @@ void Window::render_ui()
     }
 
     rendering_properties();
+    grid_properties();
+
+    if (ImGui::Button("Reset"))
+    {
+        reset_properties();
+    }
 
     ImGui::End();
 

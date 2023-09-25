@@ -96,6 +96,12 @@ namespace Renderer
             glUniform2f(uniform, vec.r, vec.g);
         }
 
+        void set(const char* name, const glm::vec3& vec)
+        {
+            GLint uniform = glGetUniformLocation(shader, name);
+            glUniform3f(uniform, vec.r, vec.g, vec.b);
+        }
+
         void set(const char* name, const glm::vec4& vec)
         {
             GLint uniform = glGetUniformLocation(shader, name);
@@ -144,6 +150,11 @@ namespace Renderer
         opengl_state.terminate();
     }
 
+    void line_width(float width)
+    {
+        glLineWidth(width);
+    }
+
     void render_background()
     {
         opengl_state.background_shader.use();
@@ -167,10 +178,11 @@ namespace Renderer
         return {X, Y};
     }
 
-    void draw_line(glm::ivec2 point1, glm::ivec2 point2, const glm::vec4& color1, const glm::vec4& color2)
+    void draw_line(glm::ivec2 point1, glm::ivec2 point2, const glm::vec3& color1, const glm::vec3& color2,
+                   bool can_use_props_colors)
     {
         opengl_state.line_rendering_shader.use();
-        if (properties.rendering.use_props_colors)
+        if (properties.rendering.use_props_colors && can_use_props_colors)
         {
             opengl_state.line_rendering_shader.set("color1", properties.rendering.point1_color);
             opengl_state.line_rendering_shader.set("color2", properties.rendering.point2_color);
