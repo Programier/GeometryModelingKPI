@@ -31,7 +31,8 @@ void draw_grid_with_axes()
     int width              = VIEWPORT_WIDTH;
     int height             = VIEWPORT_HEIGHT;
     int spacing            = properties.grid.spacing;
-    glm::ivec2 origin      = properties.grid.start_point;
+
+    glm::ivec2 origin = properties.grid.start_point;
 
     if (!properties.grid.disable_grid)
     {
@@ -53,7 +54,7 @@ void draw_grid_with_axes()
             draw_line(point1, point2, properties.grid.h_color1, properties.grid.h_color2, false);
         }
 
-        //    // Малюємо вертикальні лінії сітки
+        // Малюємо вертикальні лінії сітки
         for (int x = origin.x; x <= width; x += spacing)
         {
             glm::ivec2 point1(x, 0);

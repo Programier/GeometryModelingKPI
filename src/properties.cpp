@@ -10,7 +10,7 @@ Properties::Properties()
     rendering.point2_color = glm::vec3(1.0f);
 
     grid.start_point = glm::ivec2(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2);
-    grid.spacing     = 100;
+    grid.spacing     = DEFAULT_GRID_SPACING;
     grid.h_color1    = glm::vec3(0.5f);
     grid.h_color2    = glm::vec3(0.5f);
     grid.v_color1    = glm::vec3(0.5f);
