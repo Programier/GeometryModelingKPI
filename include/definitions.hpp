@@ -27,7 +27,8 @@
 #define PROP_INDEX_G 6
 #define PROP_INDEX_H 7
 
-#define OBJECT_PROPS_COUNT 8
+#define FIGURE_PROPS_COUNT 8
+#define ACCURACY 0.00001
 
 
 #if defined(_WIN32)

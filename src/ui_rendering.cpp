@@ -1,4 +1,5 @@
 #include <definitions.hpp>
+#include <figure.hpp>
 #include <imgui/imgui_impl_opengl3.h>
 #include <imgui/imgui_impl_sdl2.h>
 #include <opengl.hpp>
@@ -52,22 +53,25 @@ static void grid_properties()
     }
 }
 
-static void object_properties()
+static void figure_properties()
 {
-    if (ImGui::CollapsingHeader("Object"))
+    if (ImGui::CollapsingHeader("Figure"))
     {
-        for (Property& prop : properties.figure.props)
+        for (Property* prop : properties.figure.props)
         {
-            if (ImGui::SliderFloat(prop.name, &prop.value, 0.0f, 50.f))
+            if (ImGui::SliderFloat(prop->name(), &prop->value, prop->min_value(), prop->max_value()))
             {
-                // TODO
+                Figure::instance().build();
             }
         }
+
+        ImGui::SliderFloat3("Figure Color", &properties.figure.color.x, 0.0, 1.0f);
     }
 }
 
 static void reset_properties()
 {
+    std::destroy_at(&properties);
     new (&properties) Properties();
 }
 
@@ -89,7 +93,7 @@ void Window::render_ui()
 
     rendering_properties();
     grid_properties();
-    object_properties();
+    figure_properties();
 
     if (ImGui::Button("Reset"))
     {

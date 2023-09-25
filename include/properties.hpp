@@ -1,10 +1,16 @@
 #pragma once
 #include <definitions.hpp>
+#include <functional>
 #include <glm/glm.hpp>
 
 struct Property {
-    const char* name;
     float value;
+
+    virtual const char* name() = 0;
+    virtual float max_value()  = 0;
+    virtual float min_value()  = 0;
+
+    virtual ~Property();
 };
 
 
@@ -38,22 +44,27 @@ struct Properties {
         union
         {
             struct {
-                Property A;
-                Property B;
-                Property C;
-                Property D;
-                Property E;
-                Property F;
-                Property G;
-                Property H;
+                Property* A;
+                Property* B;
+                Property* C;
+                Property* D;
+                Property* E;
+                Property* F;
+                Property* G;
+                Property* H;
             };
 
-            Property props[OBJECT_PROPS_COUNT];
+            Property* props[FIGURE_PROPS_COUNT];
         };
+
+        glm::vec3 color;
 
     } figure;
 
     Properties();
+
+    float figure_prop(std::size_t index) const;
+    ~Properties();
 };
 
 

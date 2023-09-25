@@ -1,7 +1,7 @@
 #include <application.hpp>
+#include <iostream>
 #include <properties.hpp>
 #include <window.hpp>
-
 
 Application::Application()
 {}
@@ -19,6 +19,7 @@ bool Application::init()
     bool status = true;
     _M_window   = Window::instance();
     status      = _M_window->initialize();
+
     return status;
 }
 

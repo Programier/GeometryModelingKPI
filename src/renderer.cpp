@@ -168,17 +168,17 @@ namespace Renderer
 
     /////////////////////// LINE RENDERING ///////////////////////
 
-    static glm::vec2 normalize_coord(glm::ivec2 point)
+    static glm::vec2 normalize_coord(glm::vec2 point)
     {
         static constexpr float width  = static_cast<float>(VIEWPORT_WIDTH);
         static constexpr float height = static_cast<float>(VIEWPORT_HEIGHT);
 
-        float X = (2.0f * static_cast<float>(point.x) / width) - 1.0f;
-        float Y = (2.0f * static_cast<float>(point.y) / height) - 1.0f;
+        float X = (2.0f * point.x / width) - 1.0f;
+        float Y = (2.0f * point.y / height) - 1.0f;
         return {X, Y};
     }
 
-    void draw_line(glm::ivec2 point1, glm::ivec2 point2, const glm::vec3& color1, const glm::vec3& color2,
+    void draw_line(glm::vec2 point1, glm::vec2 point2, const glm::vec3& color1, const glm::vec3& color2,
                    bool can_use_props_colors)
     {
         opengl_state.line_rendering_shader.use();
