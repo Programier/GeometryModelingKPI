@@ -11,10 +11,11 @@ uniform vec4 color2;
 
 vec2 get_point()
 {
-    if(gl_VertexID == 0)
+    if (gl_VertexID == 0)
     {
         return point1;
-    }else
+    }
+    else
     {
         return point2;
     }
@@ -22,10 +23,11 @@ vec2 get_point()
 
 vec4 get_color()
 {
-    if(gl_VertexID == 0)
+    if (gl_VertexID == 0)
     {
         return color1;
-    }else
+    }
+    else
     {
         return color2;
     }
@@ -33,6 +35,6 @@ vec4 get_color()
 
 void main(void)
 {
-    out_color = get_color();
+    out_color   = get_color();
     gl_Position = vec4(get_point().xy, 0.0, 1.0);
 }

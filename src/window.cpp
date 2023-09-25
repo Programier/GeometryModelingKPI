@@ -39,6 +39,7 @@ SDL_Window* Window::window() const
 void Window::render_scene()
 {
     glViewport(PROPERTIES_WIDTH, 0, VIEWPORT_WIDTH, VIEWPORT_HEIGHT);
+    Renderer::render_background();
     extern void render_scene();
     render_scene();
 }

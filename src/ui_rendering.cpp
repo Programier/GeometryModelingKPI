@@ -18,6 +18,14 @@ static void rendering_properties()
         ImGui::Checkbox("Use properties colors", &properties.rendering.use_props_colors);
         ImGui::SliderFloat4("Point1 color", &properties.rendering.point1_color.x, 0.0, 1.0);
         ImGui::SliderFloat4("Point2 color", &properties.rendering.point2_color.x, 0.0, 1.0);
+
+        if (ImGui::CollapsingHeader("Background"))
+        {
+            ImGui::SliderFloat4("ld color", &properties.rendering.ld_color.x, 0.0, 1.0);
+            ImGui::SliderFloat4("lu color", &properties.rendering.lu_color.x, 0.0, 1.0);
+            ImGui::SliderFloat4("rd color", &properties.rendering.rd_color.x, 0.0, 1.0);
+            ImGui::SliderFloat4("ru color", &properties.rendering.ru_color.x, 0.0, 1.0);
+        }
     }
 }
 

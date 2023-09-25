@@ -28,7 +28,7 @@ namespace Renderer
         return "";
     }
 
-    struct OpenGL_State {
+    struct Shader {
         GLuint shader;
 
         GLuint compile_shader(const std::string& code, GLenum type)
@@ -54,10 +54,10 @@ namespace Renderer
             return shader_id;
         }
 
-        void create_shader_program()
+        void create(const std::string& vertex_file, const std::string& fragment_files)
         {
-            std::string vertex_code   = read_file("shaders/vertex.vert");
-            std::string fragment_code = read_file("shaders/fragment.frag");
+            std::string vertex_code   = read_file(vertex_file);
+            std::string fragment_code = read_file(fragment_files);
 
             GLuint vertex   = compile_shader(vertex_code, GL_VERTEX_SHADER);
             GLuint fragment = compile_shader(fragment_code, GL_FRAGMENT_SHADER);
@@ -85,33 +85,49 @@ namespace Renderer
             glUseProgram(shader);
         }
 
-
-        void set_position(const glm::vec2& pos, unsigned int index)
+        void use()
         {
-            static std::string name = "point0";
-            name[5]                 = '0' + index;
-
-            GLint uniform = glGetUniformLocation(shader, name.c_str());
-            glUniform2f(uniform, pos.x, pos.y);
+            glUseProgram(shader);
         }
 
-        void set_color(const glm::vec4& color, unsigned int index)
+        void set(const char* name, const glm::vec2& vec)
         {
-            static std::string name = "color0";
-            name[5]                 = '0' + index;
-
-            GLint uniform = glGetUniformLocation(shader, name.c_str());
-            glUniform4f(uniform, color.r, color.g, color.b, color.a);
+            GLint uniform = glGetUniformLocation(shader, name);
+            glUniform2f(uniform, vec.r, vec.g);
         }
 
-        void init()
+        void set(const char* name, const glm::vec4& vec)
         {
-            create_shader_program();
+            GLint uniform = glGetUniformLocation(shader, name);
+            glUniform4f(uniform, vec.r, vec.g, vec.b, vec.a);
         }
 
         void terminate()
         {
             glDeleteProgram(shader);
+        }
+    };
+
+    struct OpenGL_State {
+        Shader line_rendering_shader;
+        Shader background_shader;
+
+
+        void create_shader_programs()
+        {
+            line_rendering_shader.create("shaders/vertex.vert", "shaders/fragment.frag");
+            background_shader.create("shaders/background.vert", "shaders/background.frag");
+        }
+
+        void init()
+        {
+            create_shader_programs();
+        }
+
+        void terminate()
+        {
+            line_rendering_shader.terminate();
+            background_shader.terminate();
         }
     } opengl_state;
 
@@ -128,6 +144,17 @@ namespace Renderer
         opengl_state.terminate();
     }
 
+    void render_background()
+    {
+        opengl_state.background_shader.use();
+        opengl_state.background_shader.set("ld_color", properties.rendering.ld_color);
+        opengl_state.background_shader.set("lu_color", properties.rendering.lu_color);
+        opengl_state.background_shader.set("rd_color", properties.rendering.rd_color);
+        opengl_state.background_shader.set("ru_color", properties.rendering.ru_color);
+
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+    }
+
     /////////////////////// LINE RENDERING ///////////////////////
 
     static glm::vec2 normalize_coord(glm::ivec2 point)
@@ -142,19 +169,21 @@ namespace Renderer
 
     void draw_line(glm::ivec2 point1, glm::ivec2 point2, const glm::vec4& color1, const glm::vec4& color2)
     {
-        glUseProgram(opengl_state.shader);
+        opengl_state.line_rendering_shader.use();
         if (properties.rendering.use_props_colors)
         {
-            opengl_state.set_color(properties.rendering.point1_color, 1);
-            opengl_state.set_color(properties.rendering.point2_color, 2);
+            opengl_state.line_rendering_shader.set("color1", properties.rendering.point1_color);
+            opengl_state.line_rendering_shader.set("color2", properties.rendering.point2_color);
         }
         else
         {
-            opengl_state.set_color(color1, 1);
-            opengl_state.set_color(color2, 2);
+            opengl_state.line_rendering_shader.set("color1", color1);
+            opengl_state.line_rendering_shader.set("color2", color2);
         }
-        opengl_state.set_position(normalize_coord(point1), 1);
-        opengl_state.set_position(normalize_coord(point2), 2);
+
+        opengl_state.line_rendering_shader.set("point1", normalize_coord(point1));
+        opengl_state.line_rendering_shader.set("point2", normalize_coord(point2));
+
         glDrawArrays(GL_LINES, 0, 2);
     }
 }// namespace Renderer
