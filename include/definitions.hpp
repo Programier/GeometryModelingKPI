@@ -7,6 +7,28 @@
 #define VIEWPORT_WIDTH (WINDOW_WIDTH - PROPERTIES_WIDTH)
 #define VIEWPORT_HEIGHT WINDOW_HEIGHT
 #define DEFAULT_GRID_SPACING 100
+#define GRID_UNIT_SEGMENT 10.f
+
+#define PROP_A 55.f
+#define PROP_B 35.f
+#define PROP_C 25.f
+#define PROP_D 10.f
+#define PROP_E 25.f
+#define PROP_F 50.f
+#define PROP_G 18.f
+#define PROP_H 13.f
+
+#define PROP_INDEX_A 0
+#define PROP_INDEX_B 1
+#define PROP_INDEX_C 2
+#define PROP_INDEX_D 3
+#define PROP_INDEX_E 4
+#define PROP_INDEX_F 5
+#define PROP_INDEX_G 6
+#define PROP_INDEX_H 7
+
+#define OBJECT_PROPS_COUNT 8
+
 
 #if defined(_WIN32)
 #define PLATFORM_WINDOWS 1

@@ -18,6 +18,16 @@ Properties::Properties()
 
     grid.disable_axis = false;
     grid.disable_grid = false;
+
+
+    figure.A = {"A", PROP_A / GRID_UNIT_SEGMENT};
+    figure.B = {"B", PROP_B / GRID_UNIT_SEGMENT};
+    figure.C = {"C", PROP_C / GRID_UNIT_SEGMENT};
+    figure.D = {"D", PROP_D / GRID_UNIT_SEGMENT};
+    figure.E = {"E", PROP_E / GRID_UNIT_SEGMENT};
+    figure.F = {"F", PROP_F / GRID_UNIT_SEGMENT};
+    figure.G = {"G", PROP_G / GRID_UNIT_SEGMENT};
+    figure.H = {"H", PROP_H / GRID_UNIT_SEGMENT};
 }
 
 Properties properties;

@@ -2,6 +2,12 @@
 #include <definitions.hpp>
 #include <glm/glm.hpp>
 
+struct Property {
+    const char* name;
+    float value;
+};
+
+
 struct Properties {
     struct {
         float line_width;
@@ -29,7 +35,23 @@ struct Properties {
 
     struct {
 
-    } object;
+        union
+        {
+            struct {
+                Property A;
+                Property B;
+                Property C;
+                Property D;
+                Property E;
+                Property F;
+                Property G;
+                Property H;
+            };
+
+            Property props[OBJECT_PROPS_COUNT];
+        };
+
+    } figure;
 
     Properties();
 };

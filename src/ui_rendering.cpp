@@ -52,6 +52,20 @@ static void grid_properties()
     }
 }
 
+static void object_properties()
+{
+    if (ImGui::CollapsingHeader("Object"))
+    {
+        for (Property& prop : properties.figure.props)
+        {
+            if (ImGui::SliderFloat(prop.name, &prop.value, 0.0f, 50.f))
+            {
+                // TODO
+            }
+        }
+    }
+}
+
 static void reset_properties()
 {
     new (&properties) Properties();
@@ -75,6 +89,7 @@ void Window::render_ui()
 
     rendering_properties();
     grid_properties();
+    object_properties();
 
     if (ImGui::Button("Reset"))
     {
