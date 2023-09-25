@@ -76,6 +76,13 @@ struct Properties {
         glm::vec2 Ry;
     } affine;
 
+    struct {
+        glm::vec2 R0;
+        glm::vec2 Rx;
+        glm::vec2 Ry;
+        glm::vec2 W0;
+    } projective;
+
     Properties();
 
     float figure_prop(std::size_t index) const;
