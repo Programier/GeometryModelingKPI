@@ -1,4 +1,5 @@
 #include <figure.hpp>
+#include <point_transformer.hpp>
 #include <properties.hpp>
 
 
@@ -118,7 +119,9 @@ void Figure::render(DrawFunc drawer)
     {
         for (std::size_t index = 1, end = line.size(); index < end; ++index)
         {
-            drawer(line[index - 1], line[index], properties.figure.color, properties.figure.color, false);
+            glm::vec2 p1 = PointTransformer::figure_transform(line[index - 1]);
+            glm::vec2 p2 = PointTransformer::figure_transform(line[index]);
+            drawer(p1, p2, properties.figure.color, properties.figure.color, false);
         }
     }
 }

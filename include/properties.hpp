@@ -59,7 +59,22 @@ struct Properties {
 
         glm::vec3 color;
 
+
+        glm::vec2 offset;
+
+        struct {
+            glm::vec2 point;
+            float angle;
+        } rotate;
+
     } figure;
+
+
+    struct {
+        glm::vec2 R0;
+        glm::vec2 Rx;
+        glm::vec2 Ry;
+    } affine;
 
     Properties();
 

@@ -155,7 +155,7 @@ Properties::Properties()
     rendering.point1_color = glm::vec3(1.0f);
     rendering.point2_color = glm::vec3(1.0f);
 
-    grid.start_point = glm::ivec2(VIEWPORT_WIDTH / 2, VIEWPORT_HEIGHT / 2);
+    grid.start_point = glm::ivec2(250, 200);
     grid.spacing     = DEFAULT_GRID_SPACING;
     grid.h_color1    = glm::vec3(0.5f);
     grid.h_color2    = glm::vec3(0.5f);
@@ -189,6 +189,9 @@ Properties::Properties()
     }
 
     figure.color = glm::vec3(1.0, 1.0, 0.0);
+
+    affine.Rx = glm::vec2(1.0, 0.0);
+    affine.Ry = glm::vec2(0.0, 1.0);
 }
 
 float Properties::figure_prop(std::size_t index) const

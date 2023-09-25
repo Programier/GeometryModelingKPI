@@ -1,6 +1,7 @@
 #include <definitions.hpp>
 #include <figure.hpp>
 #include <helpers.hpp>
+#include <point_transformer.hpp>
 #include <properties.hpp>
 #include <renderer.hpp>
 
@@ -31,30 +32,31 @@ void draw_grid_with_axes()
         // Малюємо горизонтальні лінії сітки
         for (float y = origin.y; y <= height; y += spacing)
         {
-            glm::vec2 point1 = to_grid_space(0, y);
-            glm::vec2 point2 = to_grid_space(width, y);
+
+            glm::vec2 point1 = PointTransformer::transform(to_grid_space(0, y));
+            glm::vec2 point2 = PointTransformer::transform(to_grid_space(width, y));
             draw_line(point1, point2, properties.grid.h_color1, properties.grid.h_color2, false);
         }
 
         for (int y = origin.y - spacing; y > 0; y -= spacing)
         {
-            glm::vec2 point1 = to_grid_space(0, y);
-            glm::vec2 point2 = to_grid_space(width, y);
+            glm::vec2 point1 = PointTransformer::transform(to_grid_space(0, y));
+            glm::vec2 point2 = PointTransformer::transform(to_grid_space(width, y));
             draw_line(point1, point2, properties.grid.h_color1, properties.grid.h_color2, false);
         }
 
         // Малюємо вертикальні лінії сітки
         for (float x = origin.x; x <= width; x += spacing)
         {
-            glm::vec2 point1 = to_grid_space(x, 0);
-            glm::vec2 point2 = to_grid_space(x, height);
+            glm::vec2 point1 = PointTransformer::transform(to_grid_space(x, 0));
+            glm::vec2 point2 = PointTransformer::transform(to_grid_space(x, height));
             draw_line(point1, point2, properties.grid.v_color1, properties.grid.v_color2, false);
         }
 
         for (float x = origin.x - spacing; x > 0; x -= spacing)
         {
-            glm::vec2 point1 = to_grid_space(x, 0);
-            glm::vec2 point2 = to_grid_space(x, height);
+            glm::vec2 point1 = PointTransformer::transform(to_grid_space(x, 0));
+            glm::vec2 point2 = PointTransformer::transform(to_grid_space(x, height));
             draw_line(point1, point2, properties.grid.v_color1, properties.grid.v_color2, false);
         }
     }
@@ -65,12 +67,12 @@ void draw_grid_with_axes()
 
 
         // Малюємо координатні вісі
-        glm::vec2 x_axis_start = to_grid_space(0, origin.y);
-        glm::vec2 x_axis_end   = to_grid_space(width, origin.y);
+        glm::vec2 x_axis_start = PointTransformer::transform(to_grid_space(0, origin.y));
+        glm::vec2 x_axis_end   = PointTransformer::transform(to_grid_space(width, origin.y));
         draw_line(x_axis_start, x_axis_end, glm::vec3(1, 0, 0), glm::vec3(1, 0, 0), false);// Червона вісь X
 
-        glm::vec2 y_axis_start = to_grid_space(origin.x, 0);
-        glm::vec2 y_axis_end   = to_grid_space(origin.x, height);
+        glm::vec2 y_axis_start = PointTransformer::transform(to_grid_space(origin.x, 0));
+        glm::vec2 y_axis_end   = PointTransformer::transform(to_grid_space(origin.x, height));
         draw_line(y_axis_start, y_axis_end, glm::vec3(0, 1, 0), glm::vec3(0, 1, 0), false);// Зелена вісь Y
     }
 

@@ -6,11 +6,25 @@
 #include <properties.hpp>
 #include <window.hpp>
 
+struct Indent {
+    Indent()
+    {
+        ImGui::Indent(10.0);
+    }
+
+    ~Indent()
+    {
+        ImGui::Unindent(2.0f);
+    }
+};
+
 
 static void rendering_properties()
 {
     if (ImGui::CollapsingHeader("Rendering"))
     {
+        Indent indent;
+
         if (ImGui::SliderFloat("Line Width", &properties.rendering.line_width, 0.1f, 5.f))
         {
             glLineWidth(properties.rendering.line_width);
@@ -22,6 +36,7 @@ static void rendering_properties()
 
         if (ImGui::CollapsingHeader("Background"))
         {
+            Indent indent;
             ImGui::SliderFloat3("ld color", &properties.rendering.ld_color.x, 0.0, 1.0);
             ImGui::SliderFloat3("lu color", &properties.rendering.lu_color.x, 0.0, 1.0);
             ImGui::SliderFloat3("rd color", &properties.rendering.rd_color.x, 0.0, 1.0);
@@ -34,18 +49,22 @@ static void grid_properties()
 {
     if (ImGui::CollapsingHeader("Grid"))
     {
+        Indent indent;
         ImGui::SliderInt2("Start Pos", &properties.grid.start_point.x, -10000, 10000);
         ImGui::SliderInt("Spacing", &properties.grid.spacing, 1, 1000);
+
         if (ImGui::CollapsingHeader("Vertical Lines"))
         {
-            ImGui::SliderFloat3("Vertical Color1", &properties.grid.v_color1.x, 0.0, 1.0);
-            ImGui::SliderFloat3("Vertical Color2", &properties.grid.v_color2.x, 0.0, 1.0);
+            Indent indent;
+            ImGui::SliderFloat3("V. Color1", &properties.grid.v_color1.x, 0.0, 1.0);
+            ImGui::SliderFloat3("V. Color2", &properties.grid.v_color2.x, 0.0, 1.0);
         }
 
         if (ImGui::CollapsingHeader("Horizontal Lines"))
         {
-            ImGui::SliderFloat3("Horizontal Color1", &properties.grid.h_color1.x, 0.0, 1.0);
-            ImGui::SliderFloat3("Horizontal Color2", &properties.grid.h_color2.x, 0.0, 1.0);
+            Indent indent;
+            ImGui::SliderFloat3("H. Color1", &properties.grid.h_color1.x, 0.0, 1.0);
+            ImGui::SliderFloat3("H. Color2", &properties.grid.h_color2.x, 0.0, 1.0);
         }
 
         ImGui::Checkbox("Disable Grid", &properties.grid.disable_grid);
@@ -57,15 +76,31 @@ static void figure_properties()
 {
     if (ImGui::CollapsingHeader("Figure"))
     {
-        for (Property* prop : properties.figure.props)
+        Indent indent;
+        if (ImGui::CollapsingHeader("Properties"))
         {
-            if (ImGui::SliderFloat(prop->name(), &prop->value, prop->min_value(), prop->max_value()))
+            Indent indent;
+            for (Property* prop : properties.figure.props)
             {
-                Figure::instance().build();
+                if (ImGui::SliderFloat(prop->name(), &prop->value, prop->min_value(), prop->max_value()))
+                {
+                    Figure::instance().build();
+                }
             }
+
+            ImGui::SliderFloat3("Figure Color", &properties.figure.color.x, 0.0, 1.0f);
         }
 
-        ImGui::SliderFloat3("Figure Color", &properties.figure.color.x, 0.0, 1.0f);
+        ImGui::Separator();
+
+        ImGui::InputFloat2("Figure Offset", &properties.figure.offset.x);
+
+        if (ImGui::CollapsingHeader("Figure Rotate"))
+        {
+            Indent indent;
+            ImGui::InputFloat2("Rotate Point", &properties.figure.rotate.point.x);
+            ImGui::InputFloat("Rotate Angle", &properties.figure.rotate.angle);
+        }
     }
 }
 
@@ -73,6 +108,17 @@ static void reset_properties()
 {
     std::destroy_at(&properties);
     new (&properties) Properties();
+}
+
+static void affine_properties()
+{
+    if (ImGui::CollapsingHeader("Affine"))
+    {
+        Indent indent;
+        ImGui::InputFloat2("R0", &properties.affine.R0.x);
+        ImGui::InputFloat2("Rx", &properties.affine.Rx.x);
+        ImGui::InputFloat2("Ry", &properties.affine.Ry.x);
+    }
 }
 
 void Window::render_ui()
@@ -94,6 +140,7 @@ void Window::render_ui()
     rendering_properties();
     grid_properties();
     figure_properties();
+    affine_properties();
 
     if (ImGui::Button("Reset"))
     {
