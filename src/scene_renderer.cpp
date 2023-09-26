@@ -28,7 +28,8 @@ void draw_grid_with_axes()
         for (glm::uint i = 0, j = properties.grid.size.y * 2; i <= j; ++i)
         {
             draw_line(PointTransformer::transform(start), PointTransformer::transform(end), properties.grid.h_color1,
-                      properties.grid.h_color1, false);
+                      properties.grid.h_color2, false);
+
             start.y += 1.0;
             end.y += 1.0;
         }
@@ -38,8 +39,10 @@ void draw_grid_with_axes()
 
         for (glm::uint i = 0, j = properties.grid.size.x * 2; i <= j; ++i)
         {
-            draw_line(PointTransformer::transform(start), PointTransformer::transform(end), properties.grid.h_color1,
-                      properties.grid.h_color1, false);
+
+            draw_line(PointTransformer::transform(start), PointTransformer::transform(end), properties.grid.v_color1,
+                      properties.grid.v_color2, false);
+
             start.x += 1.0;
             end.x += 1.0;
         }
