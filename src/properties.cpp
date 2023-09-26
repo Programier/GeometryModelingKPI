@@ -164,6 +164,7 @@ Properties::Properties()
 
     grid.disable_axis = false;
     grid.disable_grid = false;
+    grid.size         = {20, 20};
 
     figure.A = new AProp();
     figure.B = new BProp();

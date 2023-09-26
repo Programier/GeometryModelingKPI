@@ -42,6 +42,10 @@ static void grid_properties()
 {
     if (ImGui::CollapsingHeader("Grid"))
     {
+        if (ImGui::InputInt2("Size", &properties.grid.size.x))
+        {
+            properties.grid.size = glm::abs(properties.grid.size);
+        }
         ImGui::SliderInt2("Start Pos", &properties.grid.start_point.x, -10000, 10000);
         ImGui::SliderInt("Spacing", &properties.grid.spacing, 1, 1000);
 
@@ -103,10 +107,10 @@ static void affine_properties()
 {
     if (ImGui::CollapsingHeader("Affine"))
     {
-
-        ImGui::InputFloat2("R0", &properties.affine.R0.x);
-        ImGui::InputFloat2("Rx", &properties.affine.Rx.x);
-        ImGui::InputFloat2("Ry", &properties.affine.Ry.x);
+        ImGui::InputFloat2("R0##1", &properties.affine.R0.x);
+        ImGui::InputFloat2("Rx##1", &properties.affine.Rx.x);
+        ImGui::InputFloat2("Ry##1", &properties.affine.Ry.x);
+        ImGui::Checkbox("Enable##1", &properties.affine.enable);
     }
 }
 
@@ -114,12 +118,12 @@ static void projective_properties()
 {
     if (ImGui::CollapsingHeader("Projective"))
     {
-        ImGui::InputFloat2("R0", &properties.projective.R0.x);
-        ImGui::InputFloat2("Rx", &properties.projective.Rx.x);
-        ImGui::InputFloat2("Ry", &properties.projective.Ry.x);
-        ImGui::InputFloat2("W", &properties.projective.W.x);
-        ImGui::InputFloat("W0", &properties.projective.W0);
-        ImGui::Checkbox("Enable Projective", &properties.projective.enable);
+        ImGui::InputFloat2("R0##2", &properties.projective.R0.x);
+        ImGui::InputFloat2("Rx##2", &properties.projective.Rx.x);
+        ImGui::InputFloat2("Ry##2", &properties.projective.Ry.x);
+        ImGui::InputFloat2("W##2", &properties.projective.W.x);
+        ImGui::InputFloat("W0##2", &properties.projective.W0);
+        ImGui::Checkbox("Enable##2", &properties.projective.enable);
     }
 }
 

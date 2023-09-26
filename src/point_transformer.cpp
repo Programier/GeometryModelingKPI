@@ -31,7 +31,11 @@ namespace PointTransformer
 
     glm::vec2 transform(glm::vec2 point)
     {
-        point = affine(point);
+        if (properties.affine.enable)
+        {
+            point = affine(point);
+        }
+
         if (properties.projective.enable)
         {
             point = projective(point);

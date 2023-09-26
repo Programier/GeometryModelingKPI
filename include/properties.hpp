@@ -28,12 +28,14 @@ struct Properties {
     } rendering;
 
     struct {
+        glm::ivec2 size;
         glm::ivec2 start_point;
-        std::int32_t spacing;
         glm::vec3 h_color1;
         glm::vec3 h_color2;
         glm::vec3 v_color1;
         glm::vec3 v_color2;
+
+        std::int32_t spacing;
 
         bool disable_axis;
         bool disable_grid;
@@ -77,6 +79,7 @@ struct Properties {
         glm::vec2 R0;
         glm::vec2 Rx;
         glm::vec2 Ry;
+        bool enable;
     } affine;
 
     struct {

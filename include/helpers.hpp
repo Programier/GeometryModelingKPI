@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 template<typename Out, typename In>
-inline Out vec2_cast(In&& in)
+inline Out vec2_cast(In in)
 {
     Out out;
     out.x = static_cast<Out::value_type>(in.x);
