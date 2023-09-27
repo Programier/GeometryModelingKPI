@@ -166,6 +166,9 @@ Properties::Properties()
     grid.disable_grid = false;
     grid.size         = {20, 20};
 
+    figure.scale.point = {0, 0};
+    figure.scale.scale = {1, 1};
+
     figure.A = new AProp();
     figure.B = new BProp();
     figure.C = new CProp();
@@ -228,6 +231,14 @@ Properties properties;
 struct PropertiesUpdater : public Object {
 
     bool right_mouse_button_pressed = false;
+    bool can_scroll                 = false;
+
+    static bool point_in_viewport(glm::uvec2 point)
+    {
+        if (point.x > WINDOW_WIDTH || point.x < PROPERTIES_WIDTH)
+            return false;
+        return true;
+    }
 
     virtual void process_event(SDL_Event* event)
     {
@@ -257,9 +268,10 @@ struct PropertiesUpdater : public Object {
                 properties.grid.start_point += diff;
             }
 
-            prev_pos = current;
+            prev_pos   = current;
+            can_scroll = point_in_viewport(current);
         }
-        else if (event->type == SDL_MOUSEWHEEL)
+        else if (can_scroll && event->type == SDL_MOUSEWHEEL)
         {
             properties.grid.spacing =
                     glm::max(properties.grid.spacing + (event->wheel.y * glm::max(properties.grid.spacing / 10, 1)), 1);

@@ -29,6 +29,7 @@
 
 #define FIGURE_PROPS_COUNT 8
 #define ACCURACY 0.00001
+#define ITEM_INDEND 12.f
 
 
 #if defined(_WIN32)

@@ -61,17 +61,25 @@ struct Properties {
 
         glm::vec3 color;
 
-
-        glm::vec2 offset;
+        struct {
+            glm::vec2 offset;
+            bool enable;
+        } move;
 
         struct {
             glm::vec2 point;
             float angle;
+
+            bool enable;
         } rotate;
 
+        struct {
+            glm::vec2 point;
+            glm::vec2 scale;
+            bool enable;
+        } scale;
 
         bool render;
-
     } figure;
 
 

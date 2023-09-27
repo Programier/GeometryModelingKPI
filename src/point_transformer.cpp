@@ -1,53 +1,96 @@
+#include <glm/ext/matrix_transform.hpp>
 #include <point_transformer.hpp>
 #include <properties.hpp>
 
 namespace PointTransformer
 {
 
-    static glm::vec2 rotate_point(glm::vec2 point, glm::vec2 relative, float angle)
+    static glm::mat3 move_matrix()
     {
-        glm::vec2 offset = point - relative;
-        float x          = relative.x + offset.x * glm::cos(angle) - offset.y * glm::sin(angle);
-        float y          = relative.y + offset.x * glm::sin(angle) + offset.y * glm::cos(angle);
-        return glm::vec2(x, y);
+        if (properties.figure.move.enable)
+        {
+            glm::mat3 result(1.0f);
+            result[2][0] = properties.figure.move.offset.x;
+            result[2][1] = properties.figure.move.offset.y;
+            return result;
+        }
+
+        return glm::mat3(1.0f);
     }
 
-    static glm::vec2 affine(glm::vec2 point)
+    static glm::mat3 rotation_matrix()
     {
-        auto& a = properties.affine;
-        float x = a.R0.x + a.Rx.x * point.x + a.Ry.x * point.y;
-        float y = a.R0.y + a.Rx.y * point.x + a.Ry.y * point.y;
-        return glm::vec2(x, y);
+        if (properties.figure.rotate.enable)
+        {
+            float x     = properties.figure.rotate.point.x;
+            float y     = properties.figure.rotate.point.y;
+            float angle = glm::radians(properties.figure.rotate.angle);
+            float csa   = glm::cos(angle);
+            float sna   = glm::sin(angle);
+
+            return {{csa, sna, 0.f}, //
+                    {-sna, csa, 0.0},//
+                    {-x * (csa - 1.0f) + y * sna, -y * (csa - 1.0f) - x * sna, 1.0f}};
+        }
+
+        return glm::mat3(1.0f);
     }
 
-    static glm::vec2 projective(glm::vec2 point)
+    static glm::mat3 scale_matrix()
     {
-        auto& proj        = properties.projective;
-        float denominator = proj.W0 + proj.W.x * point.x + proj.W.y * point.y;
-        float x = (proj.R0.x * proj.W0 + proj.Rx.x * proj.W.x * point.x + proj.Ry.x * proj.W.y * point.y) / denominator;
-        float y = (proj.R0.y * proj.W0 + proj.Rx.y * proj.W.x * point.x + proj.Ry.y * proj.W.y * point.y) / denominator;
-        return glm::vec2(x, y);
+        return glm::mat3(1.0f);
+    }
+
+    static glm::mat3 mirror_matrix()
+    {
+        return glm::mat3(1.0f);
+    }
+
+    static glm::mat3 affine_matrix()
+    {
+        if (properties.affine.enable)
+        {
+            auto& params = properties.affine;
+
+            return {{params.Rx.x, params.Ry.x, 0.f},
+                    {params.Rx.y, params.Ry.y, 0.0f},
+                    {params.R0.x, params.R0.y, 1.0f}};
+        }
+        return glm::mat3(1.0f);
+    }
+
+    static glm::mat3 projective_matrix()
+    {
+        if (properties.projective.enable)
+        {
+            auto& params = properties.projective;
+
+            return {{params.Rx.x * params.W.x, params.Ry.x * params.W.x, params.W.x},
+                    {params.Rx.y * params.W.y, params.Ry.y * params.W.y, params.W.y},
+                    {params.R0.x * params.W0, params.R0.y * params.W0, params.W0}};
+        }
+        return glm::mat3(1.0f);
     }
 
     glm::vec2 transform(glm::vec2 point)
     {
-        if (properties.affine.enable)
-        {
-            point = affine(point);
-        }
+        glm::vec3 output = affine_matrix()      //
+                           * projective_matrix()//
+                           * glm::vec3(point, 1.0f);
 
-        if (properties.projective.enable)
-        {
-            point = projective(point);
-        }
-        return point;
+        return glm::vec2(output / output.z);
     }
 
 
     glm::vec2 figure_transform(glm::vec2 point)
     {
-        point += properties.figure.offset;
-        point = rotate_point(point, properties.figure.rotate.point, glm::radians(properties.figure.rotate.angle));
-        return transform(point);
+        glm::vec3 output = move_matrix()        //
+                           * rotation_matrix()  //
+                           * scale_matrix()     //
+                           * mirror_matrix()    //
+                           * affine_matrix()    //
+                           * projective_matrix()//
+                           * glm::vec3(point, 1.0f);
+        return glm::vec2(output / output.z);
     }
 }// namespace PointTransformer
