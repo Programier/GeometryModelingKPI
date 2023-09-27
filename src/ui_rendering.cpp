@@ -126,9 +126,17 @@ static void figure_properties()
         if (ImGui::CollapsingHeader("Scale"))
         {
             Indent indent;
-            ImGui::InputFloat2("Point2", &properties.figure.scale.point.x);
             ImGui::InputFloat2("Scale##1", &properties.figure.scale.scale.x);
             ImGui::Checkbox("Enable##3", &properties.figure.scale.enable);
+        }
+
+        push_empty_line(false);
+
+        if (ImGui::CollapsingHeader("Symmetry"))
+        {
+            Indent indent;
+            ImGui::Checkbox("XZ", &properties.figure.symmetry.XZ);
+            ImGui::Checkbox("YZ", &properties.figure.symmetry.YZ);
         }
 
         push_empty_line(false);

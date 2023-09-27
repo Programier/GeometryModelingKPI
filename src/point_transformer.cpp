@@ -38,11 +38,35 @@ namespace PointTransformer
 
     static glm::mat3 scale_matrix()
     {
+        if (properties.figure.scale.enable)
+        {
+            glm::mat3 result(1.0f);
+            result[0][0] = properties.figure.scale.scale.x;
+            result[1][1] = properties.figure.scale.scale.y;
+            return result;
+        }
         return glm::mat3(1.0f);
     }
 
-    static glm::mat3 mirror_matrix()
+    static glm::mat3 xz_symmentry_matrix()
     {
+        if (properties.figure.symmetry.XZ)
+        {
+            static glm::mat3 result(1.0f);
+            result[1][1] = -1.f;
+            return result;
+        }
+        return glm::mat3(1.0f);
+    }
+
+    static glm::mat3 yz_symmentry_matrix()
+    {
+        if (properties.figure.symmetry.YZ)
+        {
+            static glm::mat3 result(1.0f);
+            result[0][0] = -1.f;
+            return result;
+        }
         return glm::mat3(1.0f);
     }
 
@@ -84,12 +108,13 @@ namespace PointTransformer
 
     glm::vec2 figure_transform(glm::vec2 point)
     {
-        glm::vec3 output = move_matrix()        //
-                           * rotation_matrix()  //
-                           * scale_matrix()     //
-                           * mirror_matrix()    //
-                           * affine_matrix()    //
-                           * projective_matrix()//
+        glm::vec3 output = move_matrix()          //
+                           * rotation_matrix()    //
+                           * scale_matrix()       //
+                           * xz_symmentry_matrix()//
+                           * yz_symmentry_matrix()//
+                           * affine_matrix()      //
+                           * projective_matrix()  //
                            * glm::vec3(point, 1.0f);
         return glm::vec2(output / output.z);
     }

@@ -166,7 +166,6 @@ Properties::Properties()
     grid.disable_grid = false;
     grid.size         = {20, 20};
 
-    figure.scale.point = {0, 0};
     figure.scale.scale = {1, 1};
 
     figure.A = new AProp();

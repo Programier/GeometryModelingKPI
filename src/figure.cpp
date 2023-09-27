@@ -121,7 +121,7 @@ void Figure::render(DrawFunc drawer)
         {
             glm::vec2 p1 = PointTransformer::figure_transform(line[index - 1]);
             glm::vec2 p2 = PointTransformer::figure_transform(line[index]);
-            drawer(p1, p2, properties.figure.color, properties.figure.color, false);
+            drawer(p1, p2, properties.figure.color, properties.figure.color, true);
         }
     }
 }

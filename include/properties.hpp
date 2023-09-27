@@ -74,10 +74,14 @@ struct Properties {
         } rotate;
 
         struct {
-            glm::vec2 point;
             glm::vec2 scale;
             bool enable;
         } scale;
+
+        struct {
+            bool XZ;
+            bool YZ;
+        }symmetry;
 
         bool render;
     } figure;
