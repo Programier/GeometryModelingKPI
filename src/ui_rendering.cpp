@@ -159,7 +159,7 @@ static void affine_properties()
         ImGui::InputFloat2("R0##1", &properties.affine.R0.x);
         ImGui::InputFloat2("Rx##1", &properties.affine.Rx.x);
         ImGui::InputFloat2("Ry##1", &properties.affine.Ry.x);
-        ImGui::Checkbox("Enable##1", &properties.affine.enable);
+        ImGui::Checkbox("Enable##4", &properties.affine.enable);
     }
 }
 
@@ -173,7 +173,7 @@ static void projective_properties()
         ImGui::InputFloat2("Ry##2", &properties.projective.Ry.x);
         ImGui::InputFloat2("W##2", &properties.projective.W.x);
         ImGui::InputFloat("W0##2", &properties.projective.W0);
-        ImGui::Checkbox("Enable##2", &properties.projective.enable);
+        ImGui::Checkbox("Enable##5", &properties.projective.enable);
     }
 }
 
