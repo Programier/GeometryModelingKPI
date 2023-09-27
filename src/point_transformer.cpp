@@ -108,14 +108,13 @@ namespace PointTransformer
 
     glm::vec2 figure_transform(glm::vec2 point)
     {
-        glm::vec3 output = affine_matrix()        //
-                           * projective_matrix()  //
-                           * move_matrix()        //
-                           * rotation_matrix()    //
-                           * scale_matrix()       //
-                           * xz_symmentry_matrix()//
+        glm::vec3 output = projective_matrix()    //
+                           * affine_matrix()      //
                            * yz_symmentry_matrix()//
-
+                           * xz_symmentry_matrix()//
+                           * scale_matrix()       //
+                           * rotation_matrix()    //
+                           * move_matrix()        //
                            * glm::vec3(point, 1.0f);
         return glm::vec2(output / output.z);
     }
