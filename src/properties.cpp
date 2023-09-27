@@ -167,6 +167,12 @@ Properties::Properties()
     grid.size         = {20, 20, 20, 20};
 
     figure.scale.scale = {1, 1};
+    figure.move.offset = {0, 0};
+
+    figure.move.enable   = true;
+    figure.rotate.enable = true;
+    figure.scale.enable  = true;
+    affine.enable        = true;
 
     figure.A = new AProp();
     figure.B = new BProp();
