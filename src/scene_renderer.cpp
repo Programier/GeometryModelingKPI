@@ -18,14 +18,15 @@ static void draw_line(glm::vec2 point1, glm::vec2 point2, const glm::vec3& color
 
 void draw_grid_with_axes()
 {
+
     if (!properties.grid.disable_grid)
     {
         Renderer::line_width(1.0f);
 
-        glm::vec2 start(-static_cast<float>(properties.grid.size.x), -static_cast<float>(properties.grid.size.y));
-        glm::vec2 end(static_cast<float>(properties.grid.size.x), -static_cast<float>(properties.grid.size.y));
+        glm::vec2 start(-static_cast<float>(properties.grid.size.x), -static_cast<float>(properties.grid.size.z));
+        glm::vec2 end(static_cast<float>(properties.grid.size.y), -static_cast<float>(properties.grid.size.z));
 
-        for (glm::uint i = 0, j = properties.grid.size.y * 2; i <= j; ++i)
+        for (glm::uint i = 0, j = properties.grid.size.z + properties.grid.size.w; i <= j; ++i)
         {
             draw_line(PointTransformer::transform(start), PointTransformer::transform(end), properties.grid.h_color1,
                       properties.grid.h_color2, false);
@@ -34,12 +35,11 @@ void draw_grid_with_axes()
             end.y += 1.0;
         }
 
-        start = glm::vec2(-static_cast<float>(properties.grid.size.x), -static_cast<float>(properties.grid.size.y));
-        end   = glm::vec2(-static_cast<float>(properties.grid.size.x), static_cast<float>(properties.grid.size.y));
+        start = glm::vec2(-static_cast<float>(properties.grid.size.x), -static_cast<float>(properties.grid.size.z));
+        end   = glm::vec2(-static_cast<float>(properties.grid.size.x), static_cast<float>(properties.grid.size.w));
 
-        for (glm::uint i = 0, j = properties.grid.size.x * 2; i <= j; ++i)
+        for (glm::uint i = 0, j = properties.grid.size.x + properties.grid.size.y; i <= j; ++i)
         {
-
             draw_line(PointTransformer::transform(start), PointTransformer::transform(end), properties.grid.v_color1,
                       properties.grid.v_color2, false);
 
@@ -52,7 +52,7 @@ void draw_grid_with_axes()
     {
         Renderer::line_width(2.0f);
         glm::vec2 start(-static_cast<float>(properties.grid.size.x), 0);
-        glm::vec2 end(static_cast<float>(properties.grid.size.x), 0);
+        glm::vec2 end(static_cast<float>(properties.grid.size.y), 0);
 
         static glm::vec3 x_color(1.0, 0.0, 0.0);
         static glm::vec3 y_color(0.0, 1.0, 0.0);
@@ -60,8 +60,9 @@ void draw_grid_with_axes()
 
 
         start.x = end.x = 0;
-        start.y = end.y = static_cast<float>(properties.grid.size.y);
-        start.y *= -1.0;
+        start.y         = -static_cast<float>(properties.grid.size.z);
+        end.y           = static_cast<float>(properties.grid.size.w);
+
         draw_line(PointTransformer::transform(start), PointTransformer::transform(end), y_color, y_color, false);
     }
 

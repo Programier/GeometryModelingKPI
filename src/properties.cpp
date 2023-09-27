@@ -164,7 +164,7 @@ Properties::Properties()
 
     grid.disable_axis = false;
     grid.disable_grid = false;
-    grid.size         = {20, 20};
+    grid.size         = {20, 20, 20, 20};
 
     figure.scale.scale = {1, 1};
 

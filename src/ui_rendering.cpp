@@ -57,7 +57,7 @@ static void grid_properties()
     if (ImGui::CollapsingHeader("Grid"))
     {
         Indent indent;
-        if (ImGui::InputInt2("Size", &properties.grid.size.x))
+        if (ImGui::InputInt4("Size", &properties.grid.size.x))
         {
             properties.grid.size = glm::abs(properties.grid.size);
         }

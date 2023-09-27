@@ -28,7 +28,7 @@ struct Properties {
     } rendering;
 
     struct {
-        glm::ivec2 size;
+        glm::ivec4 size;
         glm::ivec2 start_point;
         glm::vec3 h_color1;
         glm::vec3 h_color2;
