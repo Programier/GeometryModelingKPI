@@ -129,15 +129,16 @@ void Window::wait_events() const
 {
     SDL_Event event;
     static int skip_frames = 2;
-    //    if (skip_frames > 0)
-    //    {
-    //        --skip_frames;
-    //    }
-    //    else
-    //    {
-    //        SDL_WaitEvent(&event);
-    //        process_event(&event);
-    //    }
+    if (skip_frames > 0)
+    {
+        --skip_frames;
+    }
+    else
+    {
+        SDL_WaitEvent(&event);
+        process_event(&event);
+        skip_frames = 2;
+    }
 
 
     while (SDL_PollEvent(&event))

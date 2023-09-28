@@ -81,7 +81,7 @@ struct Properties {
         struct {
             bool XZ;
             bool YZ;
-        }symmetry;
+        } symmetry;
 
         bool render;
     } figure;

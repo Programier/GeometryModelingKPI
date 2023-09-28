@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <fstream>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
+#include <logger.hpp>
 #include <properties.hpp>
 #include <renderer.hpp>
 #include <string>
@@ -33,7 +33,7 @@ namespace Renderer
 
         GLuint compile_shader(const std::string& code, GLenum type)
         {
-            printf("Compiling %s shader\n", (type == GL_VERTEX_SHADER ? "vertex" : "fragment"));
+            info_log("Compiling %s shader\n", (type == GL_VERTEX_SHADER ? "vertex" : "fragment"));
 
             GLuint shader_id   = glCreateShader(type);
             const GLchar* text = reinterpret_cast<const GLchar*>(code.c_str());
@@ -46,7 +46,7 @@ namespace Renderer
             {
                 GLchar info_log[512];
                 glGetShaderInfoLog(shader_id, sizeof(info_log), nullptr, info_log);
-                std::cerr << info_log << std::endl;
+                error_log("%s\n", info_log);
                 glDeleteShader(shader_id);
                 std::exit(-1);
             }
@@ -75,7 +75,7 @@ namespace Renderer
             {
                 GLchar info_log[512];
                 glGetProgramInfoLog(shader, sizeof(info_log), nullptr, info_log);
-                std::cerr << info_log << std::endl;
+                error_log("%s\n", info_log);
             }
 
             // Видалення непотрібних об'єктів
