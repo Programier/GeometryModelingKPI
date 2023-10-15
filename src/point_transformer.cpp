@@ -98,8 +98,8 @@ namespace PointTransformer
 
     glm::vec2 transform(glm::vec2 point)
     {
-        glm::vec3 output = affine_matrix()      //
-                           * projective_matrix()//
+        glm::vec3 output = projective_matrix()//
+                           * affine_matrix()  //
                            * glm::vec3(point, 1.0f);
 
         return glm::vec2(output / output.z);
