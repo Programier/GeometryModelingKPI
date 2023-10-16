@@ -81,6 +81,7 @@ static void grid_properties()
 
         ImGui::Checkbox("Disable Grid", &properties.grid.disable_grid);
         ImGui::Checkbox("Disable Axis", &properties.grid.disable_axis);
+        ImGui::Checkbox("Enable Euclidean transform", &properties.grid.enable_euclidean_transform);
     }
 }
 
@@ -89,26 +90,34 @@ static void figure_properties()
     if (ImGui::CollapsingHeader("Figure"))
     {
         Indent indent;
-        if (ImGui::CollapsingHeader("Properties"))
-        {
-            Indent indent;
-            for (Property* prop : properties.figure.props)
-            {
-                if (ImGui::SliderFloat(prop->name(), &prop->value, prop->min_value(), prop->max_value()))
-                {
-                    Figure::instance().build();
-                }
-            }
 
-            ImGui::SliderFloat3("Figure Color", &properties.figure.color.x, 0.0, 1.0f);
+        for (Property* prop : properties.figure.props)
+        {
+            if (ImGui::SliderFloat(prop->name(), &prop->value, prop->min_value(), prop->max_value()))
+            {
+                Figure::instance().build();
+            }
         }
 
+        ImGui::SliderFloat3("Figure Color", &properties.figure.color.x, 0.0, 1.0f);
+
         push_empty_line(false);
+
+        ImGui::Checkbox("Render Figure", &properties.figure.render);
+    }
+}
+
+
+static void euclidean_properties()
+{
+    if (ImGui::CollapsingHeader("Euclidean"))
+    {
+        Indent indent;
         if (ImGui::CollapsingHeader("Move"))
         {
             Indent indent;
-            ImGui::InputFloat2("Offset", &properties.figure.move.offset.x);
-            ImGui::Checkbox("Enable##1", &properties.figure.move.enable);
+            ImGui::InputFloat2("Offset", &properties.euclidean.move.offset.x);
+            ImGui::Checkbox("Enable##1", &properties.euclidean.move.enable);
         }
 
         push_empty_line(false);
@@ -116,9 +125,9 @@ static void figure_properties()
         if (ImGui::CollapsingHeader("Rotate"))
         {
             Indent indent;
-            ImGui::InputFloat2("Point##1", &properties.figure.rotate.point.x);
-            ImGui::InputFloat("Angle", &properties.figure.rotate.angle);
-            ImGui::Checkbox("Enable##2", &properties.figure.rotate.enable);
+            ImGui::InputFloat2("Point##1", &properties.euclidean.rotate.point.x);
+            ImGui::InputFloat("Angle", &properties.euclidean.rotate.angle);
+            ImGui::Checkbox("Enable##2", &properties.euclidean.rotate.enable);
         }
 
         push_empty_line(false);
@@ -126,8 +135,8 @@ static void figure_properties()
         if (ImGui::CollapsingHeader("Scale"))
         {
             Indent indent;
-            ImGui::InputFloat2("Scale##1", &properties.figure.scale.scale.x);
-            ImGui::Checkbox("Enable##3", &properties.figure.scale.enable);
+            ImGui::InputFloat2("Scale##1", &properties.euclidean.scale.scale.x);
+            ImGui::Checkbox("Enable##3", &properties.euclidean.scale.enable);
         }
 
         push_empty_line(false);
@@ -135,13 +144,9 @@ static void figure_properties()
         if (ImGui::CollapsingHeader("Symmetry"))
         {
             Indent indent;
-            ImGui::Checkbox("XZ", &properties.figure.symmetry.XZ);
-            ImGui::Checkbox("YZ", &properties.figure.symmetry.YZ);
+            ImGui::Checkbox("XZ", &properties.euclidean.symmetry.XZ);
+            ImGui::Checkbox("YZ", &properties.euclidean.symmetry.YZ);
         }
-
-        push_empty_line(false);
-
-        ImGui::Checkbox("Render Figure", &properties.figure.render);
     }
 }
 
@@ -198,6 +203,8 @@ void Window::render_ui()
     grid_properties();
     push_empty_line();
     figure_properties();
+    push_empty_line();
+    euclidean_properties();
     push_empty_line();
     affine_properties();
     push_empty_line();

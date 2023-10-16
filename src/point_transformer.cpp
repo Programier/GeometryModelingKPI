@@ -7,11 +7,11 @@ namespace PointTransformer
 
     static glm::mat3 move_matrix()
     {
-        if (properties.figure.move.enable)
+        if (properties.euclidean.move.enable)
         {
             glm::mat3 result(1.0f);
-            result[2][0] = properties.figure.move.offset.x;
-            result[2][1] = properties.figure.move.offset.y;
+            result[2][0] = properties.euclidean.move.offset.x;
+            result[2][1] = properties.euclidean.move.offset.y;
             return result;
         }
 
@@ -20,11 +20,11 @@ namespace PointTransformer
 
     static glm::mat3 rotation_matrix()
     {
-        if (properties.figure.rotate.enable)
+        if (properties.euclidean.rotate.enable)
         {
-            float x     = properties.figure.rotate.point.x;
-            float y     = properties.figure.rotate.point.y;
-            float angle = glm::radians(properties.figure.rotate.angle);
+            float x     = properties.euclidean.rotate.point.x;
+            float y     = properties.euclidean.rotate.point.y;
+            float angle = glm::radians(properties.euclidean.rotate.angle);
             float csa   = glm::cos(angle);
             float sna   = glm::sin(angle);
 
@@ -38,11 +38,11 @@ namespace PointTransformer
 
     static glm::mat3 scale_matrix()
     {
-        if (properties.figure.scale.enable)
+        if (properties.euclidean.scale.enable)
         {
             glm::mat3 result(1.0f);
-            result[0][0] = properties.figure.scale.scale.x;
-            result[1][1] = properties.figure.scale.scale.y;
+            result[0][0] = properties.euclidean.scale.scale.x;
+            result[1][1] = properties.euclidean.scale.scale.y;
             return result;
         }
         return glm::mat3(1.0f);
@@ -50,7 +50,7 @@ namespace PointTransformer
 
     static glm::mat3 xz_symmentry_matrix()
     {
-        if (properties.figure.symmetry.XZ)
+        if (properties.euclidean.symmetry.XZ)
         {
             static glm::mat3 result(1.0f);
             result[1][1] = -1.f;
@@ -61,7 +61,7 @@ namespace PointTransformer
 
     static glm::mat3 yz_symmentry_matrix()
     {
-        if (properties.figure.symmetry.YZ)
+        if (properties.euclidean.symmetry.YZ)
         {
             static glm::mat3 result(1.0f);
             result[0][0] = -1.f;
@@ -106,7 +106,7 @@ namespace PointTransformer
     }
 
 
-    glm::vec2 figure_transform(glm::vec2 point)
+    glm::vec2 transform_with_euclidean(glm::vec2 point)
     {
         glm::vec3 output = projective_matrix()    //
                            * affine_matrix()      //

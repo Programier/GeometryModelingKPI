@@ -18,7 +18,8 @@ static void draw_line(glm::vec2 point1, glm::vec2 point2, const glm::vec3& color
 
 void draw_grid_with_axes()
 {
-
+    auto transform_func = properties.grid.enable_euclidean_transform ? PointTransformer::transform_with_euclidean
+                                                                     : PointTransformer::transform;
     if (!properties.grid.disable_grid)
     {
         Renderer::line_width(1.0f);
@@ -28,7 +29,7 @@ void draw_grid_with_axes()
 
         for (glm::uint i = 0, j = properties.grid.size.z + properties.grid.size.w; i <= j; ++i)
         {
-            draw_line(PointTransformer::transform(start), PointTransformer::transform(end), properties.grid.h_color1,
+            draw_line(transform_func(start), transform_func(end), properties.grid.h_color1,
                       properties.grid.h_color2, false);
 
             start.y += 1.0;
@@ -40,7 +41,7 @@ void draw_grid_with_axes()
 
         for (glm::uint i = 0, j = properties.grid.size.x + properties.grid.size.y; i <= j; ++i)
         {
-            draw_line(PointTransformer::transform(start), PointTransformer::transform(end), properties.grid.v_color1,
+            draw_line(transform_func(start), transform_func(end), properties.grid.v_color1,
                       properties.grid.v_color2, false);
 
             start.x += 1.0;
@@ -56,14 +57,14 @@ void draw_grid_with_axes()
 
         static glm::vec3 x_color(1.0, 0.0, 0.0);
         static glm::vec3 y_color(0.0, 1.0, 0.0);
-        draw_line(PointTransformer::transform(start), PointTransformer::transform(end), x_color, x_color, false);
+        draw_line(transform_func(start), transform_func(end), x_color, x_color, false);
 
 
         start.x = end.x = 0;
         start.y         = -static_cast<float>(properties.grid.size.z);
         end.y           = static_cast<float>(properties.grid.size.w);
 
-        draw_line(PointTransformer::transform(start), PointTransformer::transform(end), y_color, y_color, false);
+        draw_line(transform_func(start), transform_func(end), y_color, y_color, false);
     }
 
     Renderer::line_width(properties.rendering.line_width);

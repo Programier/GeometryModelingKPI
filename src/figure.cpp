@@ -119,8 +119,8 @@ void Figure::render(DrawFunc drawer)
     {
         for (std::size_t index = 1, end = line.size(); index < end; ++index)
         {
-            glm::vec2 p1 = PointTransformer::figure_transform(line[index - 1]);
-            glm::vec2 p2 = PointTransformer::figure_transform(line[index]);
+            glm::vec2 p1 = PointTransformer::transform_with_euclidean(line[index - 1]);
+            glm::vec2 p2 = PointTransformer::transform_with_euclidean(line[index]);
             drawer(p1, p2, properties.figure.color, properties.figure.color, true);
         }
     }

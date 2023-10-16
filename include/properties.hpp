@@ -39,6 +39,7 @@ struct Properties {
 
         bool disable_axis;
         bool disable_grid;
+        bool enable_euclidean_transform;
     } grid;
 
     struct {
@@ -60,7 +61,11 @@ struct Properties {
         };
 
         glm::vec3 color;
+        bool render;
 
+    } figure;
+
+    struct {
         struct {
             glm::vec2 offset;
             bool enable;
@@ -82,9 +87,7 @@ struct Properties {
             bool XZ;
             bool YZ;
         } symmetry;
-
-        bool render;
-    } figure;
+    } euclidean;
 
 
     struct {
