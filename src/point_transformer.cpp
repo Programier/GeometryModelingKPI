@@ -76,8 +76,8 @@ namespace PointTransformer
         {
             auto& params = properties.affine;
 
-            return {{params.Rx.x, params.Ry.x, 0.f},
-                    {params.Rx.y, params.Ry.y, 0.0f},
+            return {{params.Rx.x, params.Rx.y, 0.f},
+                    {params.Ry.x, params.Ry.y, 0.0f},
                     {params.R0.x, params.R0.y, 1.0f}};
         }
         return glm::mat3(1.0f);
@@ -89,8 +89,8 @@ namespace PointTransformer
         {
             auto& params = properties.projective;
 
-            return {{params.Rx.x * params.W.x, params.Ry.x * params.W.x, params.W.x},
-                    {params.Rx.y * params.W.y, params.Ry.y * params.W.y, params.W.y},
+            return {{params.Rx.x * params.W.x, params.Rx.y * params.W.x, params.W.x},
+                    {params.Ry.x * params.W.y, params.Ry.y * params.W.y, params.W.y},
                     {params.R0.x * params.W0, params.R0.y * params.W0, params.W0}};
         }
         return glm::mat3(1.0f);

@@ -165,7 +165,7 @@ Properties::Properties()
 
     grid.disable_axis               = false;
     grid.disable_grid               = false;
-    grid.size                       = {20, 20, 20, 20};
+    grid.size                       = {1, 20, 1, 20};
     grid.enable_euclidean_transform = false;
 
     euclidean.scale.scale = {1, 1};
@@ -207,10 +207,10 @@ Properties::Properties()
     figure.render = true;
 
     projective.R0     = {0, 0};
-    projective.Rx     = {100, 0};
-    projective.Ry     = {0, 200.f};
-    projective.W      = {10.f, 10.f};
-    projective.W0     = 1000.f;
+    projective.Rx     = {150, 0};
+    projective.Ry     = {0, 50.f};
+    projective.W      = {1.f, 30.f};
+    projective.W0     = 100.f;
     projective.enable = false;
 }
 
