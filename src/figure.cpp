@@ -1,9 +1,22 @@
 #include <figure.hpp>
+#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/constants.hpp>
+#include <helpers.hpp>
+#include <logger.hpp>
 #include <point_transformer.hpp>
 #include <properties.hpp>
+#include <stdio.h>
 
 
-Figure::Figure() = default;
+Figure::Figure()
+{
+    _M_lines.emplace_back();// Main circle 0
+    _M_lines.emplace_back();// second circle 1
+    _M_lines.emplace_back();// line 2
+    _M_lines.emplace_back();// second line 3
+    _M_lines.emplace_back();// tangent 4
+    _M_lines.emplace_back();// normal 5
+}
 
 Figure& Figure::instance()
 {
@@ -11,117 +24,382 @@ Figure& Figure::instance()
     return figure;
 }
 
-void Figure::add_offset(glm::vec2 offset)
+float Figure::calculate_k()
 {
-    Line& line = _M_lines.back();
-    line.push_back(line.back() + offset);
+    return (properties.figure.R / properties.figure.r) - 1.0f;
 }
 
 
-void Figure::build_arc(glm::vec2 center, float radius, float start_angle, float end_angle, int num_segments)
+void Figure::build_arc(Line& line, glm::vec2 center, float radius, float start_angle, float end_angle, int num_segments,
+                       int start)
 {
     float angle_step = (end_angle - start_angle) / static_cast<float>(num_segments);
 
-    for (int i = 1; i <= num_segments; ++i)
+    for (int i = start; i <= num_segments; ++i)
     {
         float angle = start_angle + i * angle_step;
         glm::vec2 p1(center.x + radius * cos(angle), center.y + radius * sin(angle));
-        _M_lines.back().push_back(p1);
+        line.push_back(p1);
     }
 }
 
 
-bool Figure::build()
+float Figure::fx(float t)
 {
-    clear();
-
-    const float A = properties.figure_prop(PROP_INDEX_A);
-    const float B = properties.figure_prop(PROP_INDEX_B);
-    const float C = properties.figure_prop(PROP_INDEX_C);
-    const float D = properties.figure_prop(PROP_INDEX_D);
-    const float E = properties.figure_prop(PROP_INDEX_E);
-    const float F = properties.figure_prop(PROP_INDEX_F);
-    const float G = properties.figure_prop(PROP_INDEX_G);
-    const float H = properties.figure_prop(PROP_INDEX_H);
-
-    _M_lines.emplace_back();
-
-    // Line 1
-    {
-        Line& line = _M_lines.back();
-        line.push_back({0, 0});
-
-
-        float tmp;
-        add_offset({0, F});
-        add_offset({A, 0});
-        add_offset({0, -F});
-        tmp = (A - B) / 2.0f;
-        add_offset({-tmp, 0});
-        add_offset({0, D});
-        add_offset({-B, 0});
-        add_offset({0, -D});
-        add_offset({-tmp, 0});
-
-        // Check
-        {
-            glm::vec2 accuracy = glm::abs(line.front() - line.back());
-            if (accuracy.x > ACCURACY || accuracy.y > ACCURACY)
-            {
-                clear();
-                return false;
-            }
-        }
-    }
-
-    _M_lines.emplace_back();
-    // Line 2
-    {
-        Line& line = _M_lines.back();
-
-        glm::vec2 circle_center1;
-        circle_center1.x = (A - C) / 2.0f;
-        circle_center1.y = E;
-
-        glm::vec2 circle_center2 = circle_center1 + glm::vec2(C, 0.0f);
-
-        line.push_back({circle_center1.x, circle_center1.y - G / 2.f});
-        add_offset(glm::vec2(C, 0.0f));
-
-
-        float angle = glm::asin((H - G / 2) / (G / 2));
-        build_arc(circle_center2, G / 2, glm::radians(-90.f), glm::radians(180.f) - angle, 100);
-        add_offset({C - (line.back().x - circle_center1.x) * 2.0f, 0.0});
-        build_arc(circle_center1, G / 2, angle, glm::radians(270.f), 100);
-
-        // Check
-        {
-            glm::vec2 accuracy = glm::abs(line.front() - line.back());
-            if (accuracy.x > ACCURACY || accuracy.y > ACCURACY)
-            {
-                clear();
-                return false;
-            }
-        }
-    }
-
-    return true;
+    return properties.figure.r * k * (glm::cos(t) + (glm::cos(t * k) / k));
 }
 
-void Figure::clear()
+float Figure::fy(float t)
 {
-    _M_lines.clear();
+    return properties.figure.r * k * (glm::sin(t) - (glm::sin(t * k) / k));
+}
+
+#define wrap(x) [this](double t) { return x(t); }
+
+float Figure::curvature_radius(float t)
+{
+    t = glm::radians(t);
+
+    float dx  = derivative(wrap(fx), t, 1, 1e-5);
+    float dy  = derivative(wrap(fy), t, 1, 1e-5);
+    float dx2 = derivative(wrap(fx), t, 2, 1e-1, 1e-5);
+    float dy2 = derivative(wrap(fy), t, 2, 1e-1, 1e-5);
+
+    float a = glm::pow((dx * dx + dy * dy), 3.0 / 2.0);
+    float b = dx * dy2 - dy * dx2;
+
+    return glm::abs(a / b);
+}
+
+float Figure::square(float t0, float t1)
+{
+    auto dx = [this](float t) { return derivative([this](float t) { return fx(t); }, t, 1); };
+    return glm::abs(
+            integrate(glm::radians(t0), glm::radians(t1), [this, dx](float x) -> float { return fy(x) * dx(x); }));
+}
+
+
+void Figure::update_static_circle()
+{
+    Line& line = _M_lines[static_circle_index];
+
+    if (line.empty() || !is_equal(c_R, properties.figure.R))
+    {
+        line.clear();
+        build_arc(line, {0, 0}, properties.figure.R, 0, glm::radians(360.f), 180, 0);
+    }
+}
+
+glm::vec2 Figure::get_point(float t)
+{
+    return {fx(t), fy(t)};
+}
+
+glm::vec2 Figure::get_tangent_point(float t0)
+{
+
+    glm::vec2 point = get_point(t0);
+
+    float dx = derivative([this](double t) { return fx(t); }, t0);
+    float dy = derivative([this](double t) { return fy(t); }, t0);
+
+    float der = dy / dx;
+
+    return {0.0, point.y + der * (-point.x)};
+}
+
+
+glm::vec2 Figure::get_normal_point(float t0)
+{
+
+    glm::vec2 point = get_point(t0);
+
+    float dx = derivative([this](double t) { return fx(t); }, t0);
+    float dy = derivative([this](double t) { return fy(t); }, t0);
+
+    float der = dy / dx;
+
+    return {0.0, point.y - (1 / der) * (-point.x)};
+}
+
+
+bool is_different_sing(double a, double b)
+{
+    return a <= 0.0 && b > 0 || a > 0 && b <= 0.0;
+}
+
+void Figure::get_bend_point(float start, float end, std::vector<glm::vec3>& out)
+{
+    out.clear();
+    start = glm::radians(start);
+    end   = glm::radians(end);
+
+    float prev = -1;
+
+    if (is_equal(start, 0.0))
+    {
+        auto res = get_point(start);
+        out.push_back({res.x, res.y, glm::degrees(start)});
+    }
+
+    while (start < end)
+    {
+        float derivative = parametric_derivative([this](double t) { return fx(t); }, [this](double t) { return fy(t); },
+                                                 start, 2, 1e-1, 1e-5);
+
+        if (is_equal(derivative, 0.0))
+        {
+            auto res = get_point(start);
+
+            out.push_back({res.x, res.y, glm::degrees(start)});
+        }
+
+        prev = derivative;
+
+        start += 0.001;
+    }
+}
+
+
+void Figure::update_dynamic_circle_and_radius()
+{
+    bool need_update = _M_lines[dynamic_circle_index].empty() || _M_lines[radius_index].empty() ||
+                       !is_equal(c_R, properties.figure.R) || !is_equal(c_r, properties.figure.r) ||
+                       !is_equal(c_a, current_angle);
+
+    if (need_update)
+    {
+        float t = glm::radians(current_angle);
+
+        Line* line = &_M_lines[dynamic_circle_index];
+
+        line->clear();
+
+        auto rotation_matrix = glm::rotate(glm::mat4(1.0), t, {0, 0, 1});
+        glm::vec4 center4    = rotation_matrix * glm::vec4(properties.figure.R - properties.figure.r, 0.0, 0.0, 1.0);
+        glm::vec2 center     = {center4.x, center4.y};
+        build_arc(*line, center, properties.figure.r, 0, glm::radians(360.f), 180, 0);
+
+        line = &_M_lines[radius_index];
+
+        if (line->empty() && !_M_lines[curve_index].empty())
+        {
+            line->resize(2);
+        }
+
+        line->front() = center;
+        line->back()  = _M_lines[curve_index].back();
+    }
+}
+
+void Figure::update_curve()
+{
+    Line& line      = _M_lines[curve_index];
+    const int limit = properties.figure.max_parts;
+
+    if (!line.empty())
+    {
+        for (int i = 0; i < 3 && line.size() >= limit; i++) line.pop_front();
+    }
+
+    bool need_update = _M_lines[curve_index].empty() || !is_equal(c_R, properties.figure.R) ||
+                       !is_equal(c_r, properties.figure.r) || !is_equal(c_a, current_angle);
+
+    if (need_update)
+    {
+        float t = glm::radians(current_angle);
+        line.push_back(get_point(t));
+        return;
+    }
+}
+
+
+void Figure::cache_data()
+{
+    c_R = properties.figure.R;
+    c_r = properties.figure.r;
+    c_a = current_angle;
+
+    c_t0 = properties.figure.tangent_angle_0;
+    c_n0 = properties.figure.normal_angle_0;
+}
+
+void Figure::update_tangent()
+{
+    if (!(_M_lines[tangent_index].empty() || !is_equal(c_t0, properties.figure.tangent_angle_0)))
+    {
+        return;
+    }
+
+    Line& line = _M_lines[tangent_index];
+
+    if (line.size() != 2)
+    {
+        line.resize(2);
+    }
+
+    float t0 = glm::radians(properties.figure.tangent_angle_0);
+
+    glm::vec2 start     = get_point(t0);
+    glm::vec2 direction = glm::normalize(get_tangent_point(t0) - start);
+
+    line.front() = start - direction;
+    line.back()  = start + direction;
+    return;
+}
+
+void Figure::update_normal()
+{
+    if (!(_M_lines[normal_index].empty() || !is_equal(c_n0, properties.figure.normal_angle_0)))
+    {
+        return;
+    }
+
+    Line& line = _M_lines[normal_index];
+
+    if (line.size() != 2)
+    {
+        line.resize(2);
+    }
+
+    float t0 = glm::radians(properties.figure.normal_angle_0);
+
+    glm::vec2 start     = get_point(t0);
+    glm::vec2 direction = glm::normalize(get_normal_point(t0) - start);
+
+    line.front() = start - direction;
+    line.back()  = start + direction;
+    return;
+}
+
+void Figure::update()
+{
+    if (!properties.figure.update)
+        return;
+
+    k = calculate_k();
+
+    bool next_iteration = false;
+
+    update_static_circle();
+
+
+    if (properties.figure.disable_animation)
+    {
+        if ((c_a + properties.figure.angle_step < properties.figure.angle ||
+             c_a - properties.figure.angle_step > properties.figure.angle || !is_equal(c_r, properties.figure.r) ||
+             !is_equal(c_R, properties.figure.R) || _M_lines[curve_index].empty()))
+        {
+            // Calculate start angle
+            c_a = properties.figure.angle -
+                  properties.figure.angle_step * static_cast<float>(properties.figure.max_parts);
+            c_a           = glm::max(c_a, 0.0f);
+            current_angle = c_a;
+            clear_curve();
+
+            while (c_a + properties.figure.angle_step < properties.figure.angle)
+            {
+                update_curve();
+                c_a = current_angle;
+                current_angle += properties.figure.angle_step;
+            }
+        }
+    }
+    else
+    {
+        // Update current angle
+        if (current_angle + properties.figure.angle_step < properties.figure.angle)
+        {
+            current_angle += properties.figure.angle_step;
+        }
+        else if (current_angle - properties.figure.angle_step > properties.figure.angle)
+        {
+            current_angle -= properties.figure.angle_step;
+        }
+
+
+        update_curve();
+    }
+
+    if (properties.figure.draw_tangent_at_current_point)
+    {
+        properties.figure.tangent_angle_0 = current_angle;
+    }
+
+    if (properties.figure.draw_normal_at_current_point)
+    {
+        properties.figure.normal_angle_0 = current_angle;
+    }
+
+    update_dynamic_circle_and_radius();
+    update_tangent();
+    update_normal();
+    cache_data();
+}
+
+
+float Figure::get_current_angle()
+{
+    return current_angle;
+}
+
+void Figure::clear_curve()
+{
+    _M_lines[curve_index].clear();
+}
+
+void Figure::reset_angle()
+{
+    current_angle = 0.0f;
+}
+
+
+static float pow2(float a)
+{
+    return a * a;
+}
+
+float Figure::get_arc_len(float a, float b)
+{
+    return integrate(glm::radians(a), glm::radians(b), [this](float x) -> float {
+        float a = derivative(wrap(fx), x, 1);
+        float b = derivative(wrap(fy), x, 1);
+        return glm::sqrt(a * a + b * b);
+    });
 }
 
 void Figure::render(DrawFunc drawer)
 {
+    update();
+
+    bool status[6] = {
+            properties.figure.render_static_circle, properties.figure.render_dynamic_circle,
+            properties.figure.render_curve,         properties.figure.render_radius,
+            properties.figure.render_tangent,       properties.figure.render_normal,
+    };
+
+    int index = 0;
     for (const Line& line : _M_lines)
     {
-        for (std::size_t index = 1, end = line.size(); index < end; ++index)
+        if (line.size() == 1)
+            continue;
+
+        if (status[index])
         {
-            glm::vec2 p1 = PointTransformer::transform_with_euclidean(line[index - 1]);
-            glm::vec2 p2 = PointTransformer::transform_with_euclidean(line[index]);
-            drawer(p1, p2, properties.figure.color, properties.figure.color, true);
+            auto prev = line.begin();
+            auto it   = ++line.begin();
+            auto end  = line.end();
+
+            while (it != end)
+            {
+                glm::vec2 p1 = PointTransformer::transform_with_euclidean(*prev);
+                glm::vec2 p2 = PointTransformer::transform_with_euclidean(*it);
+                drawer(p1, p2, properties.figure.color[index], properties.figure.color[index], true);
+                prev = it;
+                ++it;
+            }
         }
+
+        index++;
     }
 }

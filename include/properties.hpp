@@ -3,16 +3,6 @@
 #include <functional>
 #include <glm/glm.hpp>
 
-struct Property {
-    float value;
-
-    virtual const char* name() = 0;
-    virtual float max_value()  = 0;
-    virtual float min_value()  = 0;
-
-    virtual ~Property();
-};
-
 
 struct Properties {
     struct {
@@ -43,26 +33,30 @@ struct Properties {
     } grid;
 
     struct {
+        float R;
+        float r;
+        float angle;
+        float angle_step;
+        int max_parts;
 
-        union
-        {
-            struct {
-                Property* A;
-                Property* B;
-                Property* C;
-                Property* D;
-                Property* E;
-                Property* F;
-                Property* G;
-                Property* H;
-            };
+        glm::vec3 color[6];
 
-            Property* props[FIGURE_PROPS_COUNT];
-        };
+        bool render_static_circle;
+        bool render_dynamic_circle;
+        bool render_curve;
+        bool render_radius;
 
-        glm::vec3 color;
-        bool render;
+        float tangent_angle_0;
+        bool draw_tangent_at_current_point;
+        bool render_tangent;
 
+
+        float normal_angle_0;
+        bool draw_normal_at_current_point;
+        bool render_normal;
+
+        bool disable_animation;
+        bool update;
     } figure;
 
     struct {
@@ -107,8 +101,6 @@ struct Properties {
     } projective;
 
     Properties();
-
-    float figure_prop(std::size_t index) const;
     ~Properties();
 };
 

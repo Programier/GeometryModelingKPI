@@ -29,8 +29,8 @@ void draw_grid_with_axes()
 
         for (glm::uint i = 0, j = properties.grid.size.z + properties.grid.size.w; i <= j; ++i)
         {
-            draw_line(transform_func(start), transform_func(end), properties.grid.h_color1,
-                      properties.grid.h_color2, false);
+            draw_line(transform_func(start), transform_func(end), properties.grid.h_color1, properties.grid.h_color2,
+                      false);
 
             start.y += 1.0;
             end.y += 1.0;
@@ -41,8 +41,8 @@ void draw_grid_with_axes()
 
         for (glm::uint i = 0, j = properties.grid.size.x + properties.grid.size.y; i <= j; ++i)
         {
-            draw_line(transform_func(start), transform_func(end), properties.grid.v_color1,
-                      properties.grid.v_color2, false);
+            draw_line(transform_func(start), transform_func(end), properties.grid.v_color1, properties.grid.v_color2,
+                      false);
 
             start.x += 1.0;
             end.x += 1.0;
@@ -74,7 +74,5 @@ void draw_grid_with_axes()
 void render_scene()
 {
     draw_grid_with_axes();
-
-    if (properties.figure.render)
-        Figure::instance().render(draw_line);
+    Figure::instance().render(draw_line);
 }

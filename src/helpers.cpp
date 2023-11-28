@@ -23,3 +23,8 @@ glm::vec2 to_screen_space(float x, float y)
 {
     return to_screen_space({x, y});
 }
+
+bool is_equal(float a, float b)
+{
+    return a > b - ACCURACY && a < b + ACCURACY;
+}

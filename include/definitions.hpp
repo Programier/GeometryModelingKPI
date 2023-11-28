@@ -2,33 +2,26 @@
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
-#define PROPERTIES_WIDTH 350
+#define PROPERTIES_WIDTH 400
 #define PROPERTIES_HEIGHT WINDOW_HEIGHT
 #define VIEWPORT_WIDTH (WINDOW_WIDTH - PROPERTIES_WIDTH)
 #define VIEWPORT_HEIGHT WINDOW_HEIGHT
 #define DEFAULT_GRID_SPACING 75
-#define GRID_UNIT_SEGMENT 10.f
+#define GRID_UNIT_SEGMENT 1.f
 
-#define PROP_A 55.f
-#define PROP_B 35.f
-#define PROP_C 25.f
-#define PROP_D 10.f
-#define PROP_E 25.f
-#define PROP_F 50.f
-#define PROP_G 18.f
-#define PROP_H 13.f
+#define PROP_R 5.f
+#define PROP_r 1.1234f
+#define PROP_delta_ange 3.
+#define PROP_max_parts 128
 
-#define PROP_INDEX_A 0
-#define PROP_INDEX_B 1
-#define PROP_INDEX_C 2
-#define PROP_INDEX_D 3
-#define PROP_INDEX_E 4
-#define PROP_INDEX_F 5
-#define PROP_INDEX_G 6
-#define PROP_INDEX_H 7
 
-#define FIGURE_PROPS_COUNT 8
-#define ACCURACY 0.00001
+#define PROP_INDEX_R 0
+#define PROP_INDEX_r 1
+#define PROP_INDEX_dt 2
+#define PROP_INDEX_max_parts 3
+
+#define FIGURE_PROPS_COUNT 4
+#define ACCURACY 0.000001
 #define ITEM_INDEND 12.f
 
 

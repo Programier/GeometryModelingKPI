@@ -128,17 +128,17 @@ static void process_event(SDL_Event* event)
 void Window::wait_events() const
 {
     SDL_Event event;
-    static int skip_frames = 2;
-    if (skip_frames > 0)
-    {
-        --skip_frames;
-    }
-    else
-    {
-        SDL_WaitEvent(&event);
-        process_event(&event);
-        skip_frames = 2;
-    }
+//    static int skip_frames = 2;
+//    if (skip_frames > 0)
+//    {
+//        --skip_frames;
+//    }
+//    else
+//    {
+//        SDL_WaitEvent(&event);
+//        process_event(&event);
+//        skip_frames = 2;
+//    }
 
 
     while (SDL_PollEvent(&event))
@@ -182,6 +182,8 @@ bool Window::initialize()
 
     ImGui_ImplSDL2_InitForOpenGL(_M_window, _M_context);
     ImGui_ImplOpenGL3_Init("#version 300 es");
+
+    SDL_GL_SetSwapInterval(2);
 
     Renderer::init();
 

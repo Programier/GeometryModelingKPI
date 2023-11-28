@@ -6,6 +6,7 @@
 #include <properties.hpp>
 #include <window.hpp>
 
+
 struct Indent {
     Indent()
     {
@@ -32,7 +33,7 @@ static void rendering_properties()
     if (ImGui::CollapsingHeader("Rendering"))
     {
         Indent indent;
-        if (ImGui::SliderFloat("Line Width", &properties.rendering.line_width, 0.1f, 5.f))
+        if (ImGui::SliderFloat("Line Width", &properties.rendering.line_width, 0.1f, 10.f))
         {
             glLineWidth(properties.rendering.line_width);
         }
@@ -91,19 +92,140 @@ static void figure_properties()
     {
         Indent indent;
 
-        for (Property* prop : properties.figure.props)
+        auto& p = properties.figure;
+
+        if (ImGui::DragFloat("R", &p.R, .1f, p.r, 20.f))
         {
-            if (ImGui::SliderFloat(prop->name(), &prop->value, prop->min_value(), prop->max_value()))
-            {
-                Figure::instance().build();
-            }
+            Figure::instance().clear_curve();
         }
 
-        ImGui::SliderFloat3("Figure Color", &properties.figure.color.x, 0.0, 1.0f);
+        if (ImGui::DragFloat("r", &p.r, .1f, 0, p.R))
+        {
+            Figure::instance().clear_curve();
+        }
+
+        if (ImGui::DragFloat("Angle##1", &p.angle, 1.0f, 0.0f, FLT_MAX))
+        {
+            p.angle = glm::max(0.0f, p.angle);
+        }
+
+        ImGui::Text("Current Angle: %f", Figure::instance().get_current_angle());
+        ImGui::SliderFloat("Angle Step", &p.angle_step, 0, 10, "%.3f");
+
+        ImGui::DragInt("Max Parts", &p.max_parts, 1.0f, 10, 2048);
+
+
+        if (ImGui::CollapsingHeader("Colors"))
+        {
+            Indent indent;
+            static const char* names[6] = {
+                    "Static Circle Color", "Dynamic Circle Color", "Curve Color",
+                    "Radius Color",        "Tangent Color",        "Normal Color",
+            };
+
+            for (int i = 0; i < 6; i++)
+            {
+                ImGui::ColorPicker3(names[i], &properties.figure.color[i].x);
+            }
+        }
+        push_empty_line(false);
+
+
+        if (ImGui::CollapsingHeader("Tangent"))
+        {
+            Indent indent;
+            ImGui::DragFloat("t0##1", &p.tangent_angle_0, .1, 0.0, FLT_MAX);
+            ImGui::Checkbox("Render Tangent", &properties.figure.render_tangent);
+            ImGui::Checkbox("Render Tangent At Current Point", &properties.figure.draw_tangent_at_current_point);
+        }
+
+        if (ImGui::CollapsingHeader("Normal"))
+        {
+            Indent indent;
+            ImGui::DragFloat("t0##2", &p.normal_angle_0, .1, 0.0, FLT_MAX);
+            ImGui::Checkbox("Render Normal", &properties.figure.render_normal);
+            ImGui::Checkbox("Render Normal At Current Point", &properties.figure.draw_normal_at_current_point);
+        }
 
         push_empty_line(false);
 
-        ImGui::Checkbox("Render Figure", &properties.figure.render);
+        ImGui::Checkbox("Render Static Circle", &properties.figure.render_static_circle);
+        ImGui::Checkbox("Render Dynamic Circle", &properties.figure.render_dynamic_circle);
+        ImGui::Checkbox("Render Curve", &properties.figure.render_curve);
+        ImGui::Checkbox("Render Radius", &properties.figure.render_radius);
+
+        ImGui::Checkbox("Update Figure", &properties.figure.update);
+        ImGui::Checkbox("Disable animation", &properties.figure.disable_animation);
+
+        ImGui::Separator();
+        if (ImGui::Button("Clear Curve"))
+        {
+            Figure::instance().clear_curve();
+        }
+
+        if (ImGui::Button("Reset Current Angle"))
+        {
+            Figure::instance().reset_angle();
+            Figure::instance().clear_curve();
+        }
+    }
+}
+
+static void info_properties()
+{
+    if (ImGui::CollapsingHeader("Info"))
+    {
+        Indent indent;
+
+
+        if (ImGui::CollapsingHeader("Arc Len"))
+        {
+            Indent indent;
+            static float a = 0;
+            static float b = 0;
+            ImGui::DragFloat("Start##ArcLen", &a, 0.1, 0.0, b);
+            ImGui::DragFloat("End##ArcLen", &b, 0.1, a, FLT_MAX);
+
+            ImGui::Text("Len: %f", Figure::instance().get_arc_len(a, b));
+        }
+
+        if (ImGui::CollapsingHeader("Bend Points"))
+        {
+            Indent indent;
+            static float a = 0.0;
+            static float b = 0.0;
+            ImGui::DragFloat("Start##Bend", &a, 0.1, 0.0, b);
+            ImGui::DragFloat("End##Bend", &b, 0.1, a, FLT_MAX);
+
+            if (ImGui::CollapsingHeader("Result"))
+            {
+                static std::vector<glm::vec3> points;
+                Figure::instance().get_bend_point(a, b, points);
+
+                for (auto& point : points)
+                {
+                    ImGui::Text("{%f : %f} -> angle = %f", point.x, point.y, point.z);
+                }
+            }
+        }
+
+        if (ImGui::CollapsingHeader("Radius of curvature"))
+        {
+            Indent indent;
+            static float angle;
+            ImGui::DragFloat("Angle##Radius of curvature", &angle, 0.1, 0., FLT_MAX);
+            ImGui::Text("Radius: %f", Figure::instance().curvature_radius(angle));
+        }
+
+        if (ImGui::CollapsingHeader("Square"))
+        {
+            Indent indent;
+            static float a = 0.0;
+            static float b = 0.0;
+            ImGui::DragFloat("Start##Square", &a, 0.1, 0.0, b);
+            ImGui::DragFloat("End##Square", &b, 0.1, a, FLT_MAX);
+            ImGui::Text("Square: %f", Figure::instance().square(a, b));
+        }
     }
 }
 
@@ -126,7 +248,7 @@ static void euclidean_properties()
         {
             Indent indent;
             ImGui::InputFloat2("Point##1", &properties.euclidean.rotate.point.x);
-            ImGui::InputFloat("Angle", &properties.euclidean.rotate.angle);
+            ImGui::InputFloat("Angle##2", &properties.euclidean.rotate.angle);
             ImGui::Checkbox("Enable##2", &properties.euclidean.rotate.enable);
         }
 
@@ -203,6 +325,8 @@ void Window::render_ui()
     grid_properties();
     push_empty_line();
     figure_properties();
+    push_empty_line();
+    info_properties();
     push_empty_line();
     euclidean_properties();
     push_empty_line();
